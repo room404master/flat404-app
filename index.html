@@ -14,11 +14,11 @@
   --border-h:rgba(255,255,255,0.14);--gold:#d4a843;--gold-dim:rgba(212,168,67,0.15);
   --teal:#3dd9c6;--teal-dim:rgba(61,217,198,0.12);--red:#f05a5a;
   --red-dim:rgba(240,90,90,0.12);--green:#4ade80;--green-dim:rgba(74,222,128,0.12);
-  --muted:rgba(255,255,255,0.35);--text:rgba(255,255,255,0.88);
-  --text-dim:rgba(255,255,255,0.5);--nav-h:60px;--safe-bottom:env(safe-area-inset-bottom,0px);
+  --text:rgba(255,255,255,0.88);--text-dim:rgba(255,255,255,0.5);
+  --safe-bottom:env(safe-area-inset-bottom,0px);
 }
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
-html{scroll-behavior:smooth;height:100%}
+html{height:100%}
 body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);
   min-height:100vh;overflow-x:hidden;-webkit-font-smoothing:antialiased}
 body::before{content:'';position:fixed;inset:0;
@@ -28,28 +28,75 @@ body::before{content:'';position:fixed;inset:0;
 .g1{width:500px;height:500px;background:rgba(212,168,67,0.07);top:-200px;left:-150px}
 .g2{width:400px;height:400px;background:rgba(61,217,198,0.05);bottom:-100px;right:-100px}
 
-/* ── LAYOUT ── */
-.app{display:flex;min-height:100vh;position:relative;z-index:1}
+/* ════ LOGIN SCREEN ════ */
+#login-screen{
+  position:fixed;inset:0;z-index:1000;display:flex;align-items:center;justify-content:center;
+  background:var(--bg);padding:20px;
+}
+.login-wrap{width:100%;max-width:400px;animation:fadeUp .5s ease both}
+.login-logo{text-align:center;margin-bottom:32px}
+.login-logo-icon{width:64px;height:64px;background:linear-gradient(135deg,var(--gold),#b8860b);
+  border-radius:18px;display:flex;align-items:center;justify-content:center;
+  font-size:32px;margin:0 auto 14px;box-shadow:0 8px 32px rgba(212,168,67,0.35)}
+.login-logo-title{font-family:'Syne',sans-serif;font-size:28px;font-weight:800;letter-spacing:-.5px}
+.login-logo-sub{font-size:12px;color:var(--text-dim);letter-spacing:2px;text-transform:uppercase;margin-top:4px}
+.login-card{background:rgba(255,255,255,0.04);border:1px solid var(--border-h);
+  border-radius:20px;padding:28px;position:relative;overflow:hidden}
+.login-card::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;
+  background:linear-gradient(90deg,transparent,var(--border-h),transparent)}
+.login-tabs{display:flex;background:rgba(255,255,255,0.05);border-radius:10px;padding:3px;margin-bottom:22px}
+.login-tab{flex:1;padding:9px;border-radius:8px;text-align:center;cursor:pointer;
+  font-family:'Syne',sans-serif;font-size:13px;font-weight:600;color:var(--text-dim);transition:all .2s}
+.login-tab.active{background:linear-gradient(135deg,var(--gold),#b8860b);color:#000}
+.login-panel{display:none}.login-panel.active{display:block}
+.form-group{display:flex;flex-direction:column;gap:6px;margin-bottom:14px}
+.form-label{font-size:10.5px;font-weight:600;color:var(--text-dim);text-transform:uppercase;letter-spacing:1px}
+.form-input{background:rgba(255,255,255,0.05);border:1px solid var(--border);border-radius:10px;
+  padding:12px 14px;color:var(--text);font-size:15px;font-family:'DM Sans',sans-serif;
+  outline:none;transition:all .2s;appearance:none;-webkit-appearance:none;width:100%}
+.form-input:focus{border-color:rgba(212,168,67,0.5);background:rgba(212,168,67,0.04);
+  box-shadow:0 0 0 3px rgba(212,168,67,0.08)}
+.btn-login{width:100%;padding:14px;border-radius:12px;border:none;cursor:pointer;
+  background:linear-gradient(135deg,var(--gold),#b8860b);color:#0a0800;
+  font-family:'Syne',sans-serif;font-size:15px;font-weight:700;
+  box-shadow:0 4px 20px rgba(212,168,67,0.3);transition:all .2s;margin-top:4px}
+.btn-login:hover{transform:translateY(-1px);box-shadow:0 6px 28px rgba(212,168,67,0.4)}
+.btn-login:active{transform:scale(.98)}
+.login-error{background:var(--red-dim);border:1px solid rgba(240,90,90,0.25);
+  border-radius:10px;padding:10px 14px;font-size:13px;color:var(--red);
+  margin-bottom:14px;display:none;animation:shake .3s ease}
+@keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+.login-hint{text-align:center;margin-top:16px;font-size:12px;color:var(--text-dim)}
+.login-hint strong{color:var(--gold)}
+.pw-wrap{position:relative}
+.pw-toggle{position:absolute;right:12px;top:50%;transform:translateY(-50%);
+  cursor:pointer;color:var(--text-dim);font-size:16px;user-select:none;padding:4px}
 
-/* ── DESKTOP SIDEBAR ── */
+/* ════ APP ════ */
+#app{display:none}
+.app-inner{display:flex;min-height:100vh;position:relative;z-index:1}
+
+/* ── SIDEBAR ── */
 .sidebar{width:260px;min-height:100vh;background:linear-gradient(180deg,rgba(255,255,255,0.04),rgba(255,255,255,0.02));
   border-right:1px solid var(--border);display:flex;flex-direction:column;
   position:fixed;left:0;top:0;bottom:0;backdrop-filter:blur(20px);z-index:100;
   transition:transform .3s cubic-bezier(.4,0,.2,1)}
-.sidebar-logo{padding:24px 20px 18px;border-bottom:1px solid var(--border)}
+.sidebar-logo{padding:22px 20px 16px;border-bottom:1px solid var(--border)}
 .logo-row{display:flex;align-items:center;gap:10px}
-.logo-icon{width:38px;height:38px;background:linear-gradient(135deg,var(--gold),#b8860b);
-  border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px;
-  box-shadow:0 4px 20px rgba(212,168,67,0.3);flex-shrink:0}
-.logo-text{font-family:'Syne',sans-serif;font-size:20px;font-weight:800;letter-spacing:-.5px}
-.logo-sub{font-size:10px;color:var(--text-dim);letter-spacing:2px;text-transform:uppercase}
-.sidebar-user{margin:14px 12px;padding:11px;background:var(--gold-dim);
+.logo-icon{width:36px;height:36px;background:linear-gradient(135deg,var(--gold),#b8860b);
+  border-radius:10px;display:flex;align-items:center;justify-content:center;
+  font-size:17px;box-shadow:0 4px 16px rgba(212,168,67,0.3);flex-shrink:0}
+.logo-text{font-family:'Syne',sans-serif;font-size:19px;font-weight:800;letter-spacing:-.5px}
+.logo-sub{font-size:9.5px;color:var(--text-dim);letter-spacing:2px;text-transform:uppercase}
+.sidebar-user{margin:12px 10px;padding:11px;background:var(--gold-dim);
   border:1px solid rgba(212,168,67,0.2);border-radius:12px;display:flex;align-items:center;gap:9px}
 .user-av{width:34px;height:34px;border-radius:50%;background:linear-gradient(135deg,var(--gold),#8b6914);
   display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;
   font-family:'Syne',sans-serif;flex-shrink:0;color:#000}
+.user-av.tenant-av{background:linear-gradient(135deg,#3dd9c6,#1a9b8c)}
 .user-name{font-size:13px;font-weight:600}
 .user-role{font-size:10px;color:var(--gold);text-transform:uppercase;letter-spacing:1px}
+.user-role.tenant-role{color:var(--teal)}
 .sidebar-nav{flex:1;padding:6px 10px;display:flex;flex-direction:column;gap:2px;overflow-y:auto}
 .nav-section{font-size:9px;color:var(--text-dim);text-transform:uppercase;letter-spacing:2px;
   padding:12px 8px 5px;font-family:'Syne',sans-serif}
@@ -60,22 +107,27 @@ body::before{content:'';position:fixed;inset:0;
 .nav-item.active{background:var(--glass-b);border-color:var(--border-h);color:var(--text)}
 .nav-item.active::before{content:'';position:absolute;left:-10px;top:50%;transform:translateY(-50%);
   width:3px;height:60%;border-radius:0 2px 2px 0;background:var(--gold)}
+.nav-item.admin-only{/* visible only to admin */}
 .nav-icon{font-size:16px;width:20px;text-align:center}
 .nav-badge{margin-left:auto;background:var(--red);color:white;font-size:10px;font-weight:700;
   padding:2px 7px;border-radius:20px;font-family:'Syne',sans-serif}
-.sidebar-footer{padding:12px 10px;border-top:1px solid var(--border)}
+.sidebar-footer{padding:12px 10px;border-top:1px solid var(--border);display:flex;flex-direction:column;gap:6px}
+.logout-btn{display:flex;align-items:center;gap:8px;padding:10px 12px;border-radius:10px;
+  background:var(--red-dim);border:1px solid rgba(240,90,90,0.2);font-size:12px;
+  font-weight:500;color:var(--red);cursor:pointer;transition:all .2s}
+.logout-btn:hover{background:rgba(240,90,90,0.15)}
 .add-admin-btn{display:flex;align-items:center;gap:8px;padding:10px 12px;border-radius:10px;
   background:var(--gold-dim);border:1px solid rgba(212,168,67,0.2);font-size:12px;
   font-weight:500;color:var(--gold);cursor:pointer;transition:all .2s}
 .add-admin-btn:hover{background:rgba(212,168,67,0.2)}
 
-/* ── MAIN ── */
+/* ── TOPBAR ── */
 .main{margin-left:260px;flex:1;min-height:100vh;display:flex;flex-direction:column}
-.topbar{position:sticky;top:0;z-index:50;padding:14px 28px;
+.topbar{position:sticky;top:0;z-index:50;padding:13px 26px;
   background:rgba(8,12,20,0.85);backdrop-filter:blur(20px);
   border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
 .topbar-left{display:flex;align-items:center;gap:12px}
-.page-title{font-family:'Syne',sans-serif;font-size:20px;font-weight:700;letter-spacing:-.4px}
+.page-title{font-family:'Syne',sans-serif;font-size:19px;font-weight:700;letter-spacing:-.3px}
 .topbar-actions{display:flex;align-items:center;gap:8px}
 .btn{display:inline-flex;align-items:center;gap:6px;padding:8px 16px;border-radius:9px;
   font-size:13px;font-weight:500;cursor:pointer;transition:all .2s;border:none;
@@ -85,14 +137,16 @@ body::before{content:'';position:fixed;inset:0;
 .btn-gold{background:linear-gradient(135deg,var(--gold),#b8860b);color:#0a0800;font-weight:600;
   box-shadow:0 4px 14px rgba(212,168,67,0.25)}
 .btn-gold:hover{transform:translateY(-1px);box-shadow:0 6px 20px rgba(212,168,67,0.35)}
+.btn-gold:active,.btn-ghost:active{transform:scale(.97)}
 .btn-red{background:var(--red-dim);color:var(--red);border:1px solid rgba(240,90,90,0.2)}
 .btn-red:hover{background:rgba(240,90,90,0.2)}
 .btn-sm{padding:6px 12px;font-size:12px}
 .hamburger{display:none;flex-direction:column;gap:4px;cursor:pointer;padding:6px;border-radius:8px}
-.hamburger span{width:20px;height:2px;background:var(--text);border-radius:2px;transition:all .3s;display:block}
+.hamburger span{width:20px;height:2px;background:var(--text);border-radius:2px;display:block;transition:all .3s}
 
 /* ── PAGES ── */
-.page{display:none;padding:24px 28px;animation:fadeUp .35s ease both;padding-bottom:calc(24px + var(--safe-bottom))}
+.page{display:none;padding:22px 26px;animation:fadeUp .35s ease both;
+  padding-bottom:calc(22px + var(--safe-bottom))}
 .page.active{display:block}
 @keyframes fadeUp{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
 
@@ -101,20 +155,18 @@ body::before{content:'';position:fixed;inset:0;
   overflow:hidden;margin-bottom:18px;position:relative}
 .card::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;
   background:linear-gradient(90deg,transparent,var(--border-h),transparent)}
-.card-header{padding:18px 20px 14px;display:flex;align-items:center;
-  justify-content:space-between;border-bottom:1px solid var(--border);flex-wrap:wrap;gap:10px}
-.card-title{font-family:'Syne',sans-serif;font-size:15px;font-weight:700;
+.card-header{padding:16px 20px 13px;display:flex;align-items:center;
+  justify-content:space-between;border-bottom:1px solid var(--border);flex-wrap:wrap;gap:8px}
+.card-title{font-family:'Syne',sans-serif;font-size:14px;font-weight:700;
   display:flex;align-items:center;gap:8px}
 
-/* ── STATS ── */
-.stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:20px}
-.stat-card{background:var(--glass);border:1px solid var(--border);border-radius:16px;
-  padding:18px;position:relative;overflow:hidden;transition:all .25s}
+/* ── STATS GRID ── */
+.stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:13px;margin-bottom:18px}
+.stat-card{background:var(--glass);border:1px solid var(--border);border-radius:16px;padding:16px;position:relative;overflow:hidden}
 .stat-card::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;
   background:linear-gradient(90deg,transparent,var(--border-h),transparent)}
-.stat-card:active{transform:scale(.98)}
-.stat-icon{font-size:20px;margin-bottom:10px}
-.stat-val{font-family:'Syne',sans-serif;font-size:22px;font-weight:700;letter-spacing:-.5px}
+.stat-icon{font-size:19px;margin-bottom:8px}
+.stat-val{font-family:'Syne',sans-serif;font-size:21px;font-weight:700;letter-spacing:-.5px}
 .stat-lbl{font-size:11px;color:var(--text-dim);margin-top:3px}
 .stat-card.gold .stat-val{color:var(--gold)}
 .stat-card.teal .stat-val{color:var(--teal)}
@@ -124,48 +176,53 @@ body::before{content:'';position:fixed;inset:0;
 /* ── TABLES ── */
 .table-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch}
 table{width:100%;border-collapse:collapse}
-th{font-family:'Syne',sans-serif;font-size:9.5px;font-weight:700;letter-spacing:1.5px;
-  text-transform:uppercase;color:var(--text-dim);padding:11px 16px;text-align:left;
+th{font-family:'Syne',sans-serif;font-size:9px;font-weight:700;letter-spacing:1.5px;
+  text-transform:uppercase;color:var(--text-dim);padding:10px 16px;text-align:left;
   background:rgba(255,255,255,0.02);border-bottom:1px solid var(--border);white-space:nowrap}
-td{padding:12px 16px;font-size:13px;border-bottom:1px solid rgba(255,255,255,0.04)}
+td{padding:11px 16px;font-size:13px;border-bottom:1px solid rgba(255,255,255,0.04)}
 tr:last-child td{border-bottom:none}
 tr:hover td{background:rgba(255,255,255,0.02)}
 
 /* ── PILLS ── */
-.pill{display:inline-flex;align-items:center;gap:4px;padding:3px 10px;border-radius:20px;
-  font-size:10.5px;font-weight:600;letter-spacing:.3px;font-family:'Syne',sans-serif;white-space:nowrap}
+.pill{display:inline-flex;align-items:center;gap:4px;padding:3px 9px;border-radius:20px;
+  font-size:10px;font-weight:600;letter-spacing:.3px;font-family:'Syne',sans-serif;white-space:nowrap}
 .pill::before{content:'';width:5px;height:5px;border-radius:50%;flex-shrink:0}
 .pill-pending{background:rgba(212,168,67,0.12);color:var(--gold)}.pill-pending::before{background:var(--gold)}
 .pill-paid{background:rgba(74,222,128,0.1);color:var(--green)}.pill-paid::before{background:var(--green)}
 .pill-overdue{background:rgba(240,90,90,0.1);color:var(--red)}.pill-overdue::before{background:var(--red)}
 
-/* ── FORM ── */
-.form-group{display:flex;flex-direction:column;gap:5px}
-.form-label{font-size:10.5px;font-weight:600;color:var(--text-dim);text-transform:uppercase;letter-spacing:1px}
-.form-input{background:rgba(255,255,255,0.05);border:1px solid var(--border);border-radius:10px;
-  padding:11px 14px;color:var(--text);font-size:14px;font-family:'DM Sans',sans-serif;
-  outline:none;transition:all .2s;appearance:none;-webkit-appearance:none;width:100%}
-.form-input:focus{border-color:rgba(212,168,67,0.5);background:rgba(212,168,67,0.04);
-  box-shadow:0 0 0 3px rgba(212,168,67,0.08)}
-select.form-input option{background:#0d1420;color:var(--text)}
-textarea.form-input{resize:vertical;min-height:72px}
-
-/* ── ROOM CARDS ── */
-.rooms-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;padding:18px}
+/* ── ROOMS ── */
+.rooms-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;padding:16px}
 .room-card{background:rgba(255,255,255,0.025);border:1px solid var(--border);
   border-radius:14px;padding:16px;transition:all .25s}
 .room-card:hover{background:var(--glass-b);border-color:var(--border-h);transform:translateY(-2px)}
-.room-card-hdr{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:12px}
+.room-card-hdr{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:10px}
 .room-nm{font-family:'Syne',sans-serif;font-size:13px;font-weight:700}
 .room-pax{font-size:11px;color:var(--text-dim);margin-top:2px}
-.room-rate{font-family:'Syne',sans-serif;font-size:18px;font-weight:700;color:var(--gold)}
+.room-rate{font-family:'Syne',sans-serif;font-size:17px;font-weight:700;color:var(--gold)}
 .room-pp{font-size:10px;color:var(--text-dim);margin-top:1px}
-.room-tenants{display:flex;flex-wrap:wrap;gap:4px;margin-top:12px}
-.t-chip{font-size:10.5px;padding:3px 8px;border-radius:20px;background:rgba(255,255,255,0.06);
+.room-tenants{display:flex;flex-wrap:wrap;gap:4px;margin-top:10px}
+.t-chip{font-size:10px;padding:3px 8px;border-radius:20px;background:rgba(255,255,255,0.06);
   border:1px solid rgba(255,255,255,0.09);color:var(--text-dim)}
 
+/* ── CHEQUE ROWS ── */
+.cheque-row{display:flex;align-items:center;gap:14px;padding:14px 18px;
+  border-bottom:1px solid rgba(255,255,255,0.04)}
+.cheque-row:last-child{border-bottom:none}
+.cheque-num{width:28px;height:28px;border-radius:50%;background:var(--glass-b);
+  border:1px solid var(--border-h);display:flex;align-items:center;justify-content:center;
+  font-family:'Syne',sans-serif;font-size:11px;font-weight:700;flex-shrink:0;color:var(--gold)}
+.cheque-date{font-size:14px;font-weight:500;flex:1}
+.cheque-sub{font-size:11px;color:var(--text-dim);margin-top:1px}
+
+/* ── PAY BUTTON ── */
+.pay-btn{font-size:11px;padding:5px 11px;border-radius:7px;cursor:pointer;
+  font-family:'Syne',sans-serif;font-weight:600;border:none;transition:all .2s;min-width:76px}
+.pay-mark{background:var(--green-dim);color:var(--green);border:1px solid rgba(74,222,128,0.2)}
+.pay-unmark{background:var(--red-dim);color:var(--red);border:1px solid rgba(240,90,90,0.2);font-size:10px}
+
 /* ── EXPENSE ITEMS ── */
-.exp-item{display:flex;align-items:flex-start;gap:12px;padding:14px 18px;
+.exp-item{display:flex;align-items:flex-start;gap:11px;padding:13px 18px;
   border-bottom:1px solid rgba(255,255,255,0.04);transition:background .15s;position:relative}
 .exp-item:last-child{border-bottom:none}
 .exp-emoji{width:38px;height:38px;border-radius:11px;display:flex;align-items:center;
@@ -174,250 +231,264 @@ textarea.form-input{resize:vertical;min-height:72px}
 .exp-fun{background:rgba(240,90,90,.1)}.exp-food{background:rgba(212,168,67,.1)}
 .exp-other{background:rgba(255,255,255,.05)}
 .exp-info{flex:1;min-width:0}
-.exp-desc{font-size:13.5px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.exp-desc{font-size:13px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .exp-meta{font-size:11px;color:var(--text-dim);margin-top:2px}
 .exp-right{display:flex;flex-direction:column;align-items:flex-end;gap:4px;flex-shrink:0}
-.exp-amt{font-family:'Syne',sans-serif;font-weight:700;font-size:14px;color:var(--gold)}
+.exp-amt{font-family:'Syne',sans-serif;font-weight:700;font-size:13px;color:var(--gold)}
 .exp-pp{font-size:10px;color:var(--text-dim)}
 .split-tag{font-size:10px;padding:2px 7px;border-radius:12px;font-family:'Syne',sans-serif;font-weight:600}
 .s-all{background:var(--teal-dim);color:var(--teal)}
 .s-boys{background:rgba(100,120,240,.12);color:#a0aaff}
+.s-girls{background:rgba(240,100,160,.1);color:#f0a0c0}
 .s-room{background:var(--gold-dim);color:var(--gold)}
 .s-custom{background:rgba(240,90,90,.1);color:var(--red)}
-.del-btn{position:absolute;top:10px;right:14px;width:26px;height:26px;border-radius:50%;
-  background:var(--red-dim);border:1px solid rgba(240,90,90,0.2);color:var(--red);
-  display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:13px;
-  opacity:0;transition:all .2s;flex-shrink:0}
-.exp-item:hover .del-btn{opacity:1}
-/* Always show delete on touch devices */
-@media(hover:none){.del-btn{opacity:1!important;position:static;margin-left:4px}}
+.del-btn{width:26px;height:26px;border-radius:50%;background:var(--red-dim);
+  border:1px solid rgba(240,90,90,0.2);color:var(--red);display:flex;align-items:center;
+  justify-content:center;cursor:pointer;font-size:12px;opacity:0;transition:all .2s;flex-shrink:0}
+.exp-item:hover .del-btn,.del-btn.always{opacity:1}
+@media(hover:none){.del-btn{opacity:1!important}}
 
-/* ── RECEIPT PREVIEW ── */
-.receipt-thumb{width:44px;height:44px;border-radius:10px;object-fit:cover;
+/* ── RECEIPT ── */
+.receipt-thumb{height:42px;width:42px;border-radius:8px;object-fit:cover;
   border:1px solid var(--border);cursor:pointer;flex-shrink:0}
-.receipt-upload-btn{display:flex;align-items:center;gap:8px;padding:10px;
-  border:2px dashed var(--border);border-radius:10px;cursor:pointer;
-  color:var(--text-dim);font-size:13px;transition:all .2s;justify-content:center}
-.receipt-upload-btn:hover{border-color:rgba(212,168,67,0.4);color:var(--gold);background:var(--gold-dim)}
-#receipt-input{display:none}
-.receipt-preview-wrap{position:relative;display:inline-block}
-.receipt-rm{position:absolute;top:-6px;right:-6px;width:18px;height:18px;
-  background:var(--red);border-radius:50%;display:flex;align-items:center;justify-content:center;
-  font-size:10px;cursor:pointer;color:white;border:2px solid var(--bg)}
+.receipt-upload-btn{display:flex;align-items:center;gap:8px;padding:11px 14px;
+  border:2px dashed var(--border);border-radius:10px;cursor:pointer;color:var(--text-dim);
+  font-size:13px;transition:all .2s;justify-content:center;text-align:center}
+.receipt-upload-btn:hover,.receipt-upload-btn:active{border-color:rgba(212,168,67,0.4);color:var(--gold);background:var(--gold-dim)}
+.receipt-rm{position:absolute;top:-5px;right:-5px;width:16px;height:16px;background:var(--red);
+  border-radius:50%;display:flex;align-items:center;justify-content:center;
+  font-size:9px;cursor:pointer;color:white;border:2px solid var(--bg)}
 
-/* ── CUSTOM TENANT SELECT ── */
+/* ── CUSTOM PICKER ── */
 .tenant-select-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-top:6px}
-.tenant-toggle{padding:8px 6px;border-radius:9px;border:1px solid var(--border);
+.tenant-toggle{padding:8px 4px;border-radius:9px;border:1px solid var(--border);
   background:rgba(255,255,255,0.03);text-align:center;cursor:pointer;
-  font-size:12px;color:var(--text-dim);transition:all .2s;user-select:none}
+  font-size:11.5px;color:var(--text-dim);transition:all .15s;user-select:none;line-height:1.3}
 .tenant-toggle.selected{background:var(--gold-dim);border-color:rgba(212,168,67,0.4);color:var(--gold)}
-.tenant-toggle:active{transform:scale(.95)}
+.tenant-toggle:active{transform:scale(.93)}
 
 /* ── DEWA ── */
-.dewa-row{display:flex;align-items:center;gap:10px;padding:12px 16px;
+.dewa-row{display:flex;align-items:center;gap:9px;padding:11px 16px;
   border-bottom:1px solid rgba(255,255,255,0.04)}
 .dewa-row:last-child{border-bottom:none}
-.dewa-av{width:32px;height:32px;border-radius:50%;background:var(--glass-b);
-  display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;
+.dewa-av{width:30px;height:30px;border-radius:50%;background:var(--glass-b);
+  display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;
   font-family:'Syne',sans-serif;color:var(--gold);flex-shrink:0;border:1px solid var(--border-h)}
-.dewa-name{font-size:13px;font-weight:500;flex:1}
-.dewa-room{font-size:10.5px;color:var(--text-dim)}
-.dewa-amt{font-family:'Syne',sans-serif;font-weight:700;color:var(--teal);font-size:13px;min-width:60px;text-align:right}
-.dewa-co{font-size:10px;color:var(--red);font-family:'Syne',sans-serif}
-.month-tabs{display:flex;gap:6px;padding:14px 18px;overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none}
+.month-tabs{display:flex;gap:5px;padding:12px 16px;overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none}
 .month-tabs::-webkit-scrollbar{display:none}
-.month-tab{padding:7px 16px;border-radius:20px;border:1px solid var(--border);
-  font-size:12px;font-family:'Syne',sans-serif;font-weight:600;color:var(--text-dim);
+.month-tab{padding:6px 14px;border-radius:20px;border:1px solid var(--border);
+  font-size:11.5px;font-family:'Syne',sans-serif;font-weight:600;color:var(--text-dim);
   cursor:pointer;white-space:nowrap;transition:all .2s;flex-shrink:0}
 .month-tab.active{background:var(--gold-dim);border-color:rgba(212,168,67,0.4);color:var(--gold)}
+.dewa-co-tag{font-size:10px;color:var(--red);font-family:'Syne',sans-serif;font-weight:600}
 
-/* ── MODAL ── */
+/* ── MODAL / OVERLAY ── */
 .overlay{position:fixed;inset:0;background:rgba(0,0,0,0.75);backdrop-filter:blur(8px);
   z-index:200;display:none;align-items:flex-end;justify-content:center;padding:0}
 .overlay.open{display:flex;animation:fadeIn .2s ease}
 @media(min-width:600px){.overlay{align-items:center;padding:20px}}
 @keyframes fadeIn{from{opacity:0}to{opacity:1}}
 .modal{background:#0d1420;border:1px solid var(--border-h);border-radius:20px 20px 0 0;
-  padding:20px;width:100%;max-height:90vh;overflow-y:auto;
+  padding:20px;width:100%;max-height:92vh;overflow-y:auto;
   animation:slideUp .3s cubic-bezier(.4,0,.2,1);
   padding-bottom:calc(20px + var(--safe-bottom))}
-@media(min-width:600px){.modal{border-radius:20px;max-width:520px;max-height:80vh}}
-@keyframes slideUp{from{transform:translateY(20px);opacity:0}to{transform:translateY(0);opacity:1}}
+@media(min-width:600px){.modal{border-radius:20px;max-width:520px;max-height:85vh}}
+@keyframes slideUp{from{transform:translateY(24px);opacity:0}to{transform:translateY(0);opacity:1}}
 .modal-handle{width:36px;height:4px;border-radius:2px;background:var(--border-h);
   margin:0 auto 16px;display:block}
 @media(min-width:600px){.modal-handle{display:none}}
-.modal-title{font-family:'Syne',sans-serif;font-size:18px;font-weight:700;margin-bottom:18px}
-.modal-close{float:right;width:28px;height:28px;border-radius:50%;background:var(--glass);
+.modal-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px}
+.modal-title{font-family:'Syne',sans-serif;font-size:17px;font-weight:700}
+.modal-close{width:28px;height:28px;border-radius:50%;background:var(--glass);
   border:1px solid var(--border);display:flex;align-items:center;justify-content:center;
-  cursor:pointer;font-size:13px;color:var(--text-dim);transition:all .2s;margin-top:-4px}
+  cursor:pointer;font-size:13px;color:var(--text-dim);transition:all .2s;flex-shrink:0}
+.modal-close:hover{background:var(--glass-b);color:var(--text)}
 
-/* ── BOTTOM NAV (mobile) ── */
+/* ── BOTTOM NAV ── */
 .bottom-nav{display:none;position:fixed;bottom:0;left:0;right:0;z-index:90;
   background:rgba(8,12,20,0.95);backdrop-filter:blur(20px);border-top:1px solid var(--border);
   padding:8px 0 calc(8px + var(--safe-bottom));
-  display:none;grid-template-columns:repeat(5,1fr)}
-.bn-item{display:flex;flex-direction:column;align-items:center;gap:3px;padding:6px 4px;
-  cursor:pointer;color:var(--text-dim);transition:all .2s;border-radius:10px;
-  font-size:9px;font-family:'Syne',sans-serif;font-weight:600;letter-spacing:.5px;
-  position:relative}
+  grid-template-columns:repeat(5,1fr)}
+.bn-item{display:flex;flex-direction:column;align-items:center;gap:3px;padding:5px 4px;
+  cursor:pointer;color:var(--text-dim);transition:color .2s;border-radius:10px;
+  font-size:8.5px;font-family:'Syne',sans-serif;font-weight:600;letter-spacing:.5px;position:relative}
 .bn-item.active{color:var(--gold)}
-.bn-icon{font-size:20px;line-height:1}
-.bn-badge{position:absolute;top:3px;right:calc(50% - 18px);background:var(--red);
-  color:white;font-size:9px;font-weight:700;padding:1px 5px;border-radius:10px;
-  font-family:'Syne',sans-serif}
+.bn-icon{font-size:19px;line-height:1}
+.bn-badge{position:absolute;top:2px;right:calc(50% - 19px);background:var(--red);
+  color:white;font-size:9px;font-weight:700;padding:1px 5px;border-radius:10px;font-family:'Syne',sans-serif}
+
+/* ── FAB ── */
+.fab{display:none;position:fixed;right:16px;bottom:calc(76px + var(--safe-bottom));z-index:80;
+  width:52px;height:52px;border-radius:50%;background:linear-gradient(135deg,var(--gold),#b8860b);
+  align-items:center;justify-content:center;font-size:24px;cursor:pointer;
+  box-shadow:0 4px 20px rgba(212,168,67,0.4);transition:all .2s;color:#000;border:none}
+.fab:active{transform:scale(.92)}
+
+/* ── SPLIT PREVIEW ── */
+.split-preview{background:var(--teal-dim);border:1px solid rgba(61,217,198,0.15);
+  border-radius:10px;padding:10px 14px;font-size:13px;color:var(--teal)}
 
 /* ── TOAST ── */
 .toast{position:fixed;bottom:80px;left:50%;transform:translateX(-50%) translateY(60px);
-  z-index:300;background:#0d1420;border:1px solid var(--green);border-radius:12px;
-  padding:12px 20px;display:flex;align-items:center;gap:9px;font-size:13px;color:var(--green);
-  box-shadow:0 8px 32px rgba(0,0,0,.5);opacity:0;transition:all .35s cubic-bezier(.4,0,.2,1);
+  z-index:500;background:#0d1420;border:1px solid var(--green);border-radius:12px;
+  padding:11px 18px;display:flex;align-items:center;gap:8px;font-size:13px;color:var(--green);
+  box-shadow:0 8px 32px rgba(0,0,0,.5);opacity:0;transition:all .3s cubic-bezier(.4,0,.2,1);
   white-space:nowrap;max-width:90vw;pointer-events:none}
 @media(min-width:768px){.toast{bottom:24px;right:24px;left:auto;transform:translateY(60px)}}
 .toast.show{transform:translateX(-50%) translateY(0);opacity:1}
 @media(min-width:768px){.toast.show{transform:translateY(0)}}
 
+/* ── LIGHTBOX ── */
+.lightbox{position:fixed;inset:0;background:rgba(0,0,0,0.93);z-index:600;
+  display:none;align-items:center;justify-content:center}
+.lightbox.open{display:flex}
+.lightbox img{max-width:90vw;max-height:85vh;border-radius:12px}
+.lightbox-close{position:fixed;top:16px;right:16px;width:36px;height:36px;border-radius:50%;
+  background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.2);
+  display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:16px;color:white;z-index:601}
+
+/* ── CONFIRM ── */
+.confirm-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.8);backdrop-filter:blur(6px);
+  z-index:400;display:none;align-items:center;justify-content:center;padding:20px}
+.confirm-overlay.open{display:flex}
+.confirm-box{background:#0d1420;border:1px solid var(--border-h);border-radius:16px;
+  padding:24px;max-width:330px;width:100%;text-align:center}
+.confirm-icon{font-size:34px;margin-bottom:10px}
+.confirm-title{font-family:'Syne',sans-serif;font-size:16px;font-weight:700;margin-bottom:6px}
+.confirm-msg{font-size:13px;color:var(--text-dim);margin-bottom:18px;line-height:1.5}
+.confirm-btns{display:flex;gap:10px}
+
 /* ── TABS ── */
-.tabs{display:flex;gap:2px;padding:12px 16px 0;overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none}
+.tabs{display:flex;gap:2px;padding:10px 16px 0;overflow-x:auto;scrollbar-width:none}
 .tabs::-webkit-scrollbar{display:none}
-.tab{padding:8px 16px;border-radius:8px 8px 0 0;font-size:12px;font-weight:600;
+.tab{padding:8px 15px;border-radius:8px 8px 0 0;font-size:11.5px;font-weight:600;
   cursor:pointer;color:var(--text-dim);transition:all .2s;white-space:nowrap;
   border-bottom:2px solid transparent;font-family:'Syne',sans-serif}
 .tab.active{color:var(--gold);border-bottom-color:var(--gold)}
 .tab-content{display:none}.tab-content.active{display:block}
 
-/* ── CHEQUE ROW ── */
-.cheque-row{display:flex;align-items:center;gap:14px;padding:16px 18px;
+/* ── ADMIN PANEL ── */
+.admin-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;padding:16px}
+@media(max-width:600px){.admin-grid{grid-template-columns:1fr}}
+.admin-block{background:rgba(255,255,255,0.025);border:1px solid var(--border);border-radius:13px;padding:14px}
+.admin-block-title{font-family:'Syne',sans-serif;font-size:10px;font-weight:700;color:var(--text-dim);
+  text-transform:uppercase;letter-spacing:1.2px;margin-bottom:10px}
+.adm-row{display:flex;align-items:center;gap:9px;padding:7px 0;border-bottom:1px solid rgba(255,255,255,0.04)}
+.adm-row:last-child{border-bottom:none}
+.adm-av{width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,var(--gold),#8b6914);
+  display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:#000;flex-shrink:0}
+.adm-name{font-size:12px;font-weight:500;flex:1}
+.adm-role{font-size:9.5px;color:var(--gold);text-transform:uppercase;letter-spacing:.5px}
+.setting-row{display:flex;justify-content:space-between;align-items:center;
+  padding:9px 0;border-bottom:1px solid rgba(255,255,255,0.04);font-size:12.5px}
+.setting-row:last-child{border-bottom:none}
+.setting-lbl{color:var(--text-dim)}
+
+/* ── ROOM OVERVIEW (dashboard) ── */
+.room-ov-item{display:flex;align-items:center;gap:11px;padding:11px 16px;
   border-bottom:1px solid rgba(255,255,255,0.04)}
-.cheque-row:last-child{border-bottom:none}
-.cheque-num{width:30px;height:30px;border-radius:50%;background:var(--glass-b);
-  border:1px solid var(--border-h);display:flex;align-items:center;justify-content:center;
-  font-family:'Syne',sans-serif;font-size:11px;font-weight:700;flex-shrink:0;color:var(--gold)}
-.cheque-info{flex:1}
-.cheque-date{font-size:14px;font-weight:500}
-.cheque-sub{font-size:11px;color:var(--text-dim);margin-top:2px}
-.cheque-amt{font-family:'Syne',sans-serif;font-size:17px;font-weight:700;color:var(--gold)}
+.room-ov-item:last-child{border-bottom:none}
 
-/* ── PAY BUTTON ── */
-.pay-btn{font-size:11px;padding:5px 11px;border-radius:7px;cursor:pointer;
-  font-family:'Syne',sans-serif;font-weight:600;border:none;transition:all .2s;min-width:80px}
-.pay-mark{background:var(--green-dim);color:var(--green);border:1px solid rgba(74,222,128,0.2)}
-.pay-unmark{background:var(--red-dim);color:var(--red);border:1px solid rgba(240,90,90,0.2);font-size:10px}
-
-/* ── EDIT INLINE ── */
-.edit-icon{font-size:13px;color:var(--text-dim);cursor:pointer;padding:4px;
-  border-radius:6px;transition:all .2s;flex-shrink:0}
-.edit-icon:hover{background:var(--glass-b);color:var(--gold)}
-.inline-input{background:rgba(255,255,255,0.05);border:1px solid rgba(212,168,67,0.4);
-  border-radius:7px;padding:4px 8px;color:var(--text);font-size:13px;
-  font-family:'DM Sans',sans-serif;outline:none;width:80px}
-
-/* ── LIGHTBOX ── */
-.lightbox{position:fixed;inset:0;background:rgba(0,0,0,0.92);z-index:500;
-  display:none;align-items:center;justify-content:center}
-.lightbox.open{display:flex}
-.lightbox img{max-width:90vw;max-height:85vh;border-radius:12px;box-shadow:0 20px 60px rgba(0,0,0,.8)}
-.lightbox-close{position:fixed;top:16px;right:16px;width:36px;height:36px;border-radius:50%;
-  background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.2);
-  display:flex;align-items:center;justify-content:center;cursor:pointer;
-  font-size:16px;color:white;z-index:501}
+/* ── TENANT-ONLY EXPENSE VIEW ── */
+.tenant-exp-banner{background:var(--teal-dim);border:1px solid rgba(61,217,198,0.2);
+  border-radius:12px;padding:12px 16px;margin-bottom:16px;font-size:13px;color:var(--teal);
+  display:flex;align-items:center;gap:10px}
 
 /* ── SCROLLBAR ── */
 ::-webkit-scrollbar{width:4px;height:4px}
 ::-webkit-scrollbar-track{background:transparent}
 ::-webkit-scrollbar-thumb{background:rgba(255,255,255,0.08);border-radius:4px}
 
-/* ════ RESPONSIVE ════ */
+/* ── RESPONSIVE ── */
 @media(max-width:900px){.stats-grid{grid-template-columns:repeat(2,1fr)}}
 @media(max-width:768px){
   .sidebar{transform:translateX(-100%);width:280px}
   .sidebar.open{transform:translateX(0);box-shadow:0 0 60px rgba(0,0,0,.6)}
-  .sidebar-overlay{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:99;display:none}
-  .sidebar-overlay.open{display:block}
+  .sb-overlay{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:99;display:none}
+  .sb-overlay.open{display:block}
   .main{margin-left:0}
-  .topbar{padding:12px 16px}
-  .topbar-actions .btn span:not(:first-child){display:none}
-  .page{padding:14px 14px calc(84px + var(--safe-bottom))}
+  .topbar{padding:11px 16px}
+  .page{padding:13px 13px calc(80px + var(--safe-bottom))}
   .hamburger{display:flex}
   .stats-grid{grid-template-columns:repeat(2,1fr);gap:10px}
-  .rooms-grid{grid-template-columns:repeat(2,1fr);gap:12px}
+  .rooms-grid{grid-template-columns:repeat(2,1fr);gap:10px}
   .bottom-nav{display:grid}
+  .fab{display:flex}
   .page-title{font-size:17px}
-  .card-header{padding:14px 16px 12px}
-  .stat-card{padding:14px}
-  .stat-val{font-size:20px}
 }
 @media(max-width:420px){
   .stats-grid{grid-template-columns:1fr 1fr}
   .rooms-grid{grid-template-columns:1fr}
   .tenant-select-grid{grid-template-columns:repeat(2,1fr)}
 }
-
-/* ── ADMIN GRID ── */
-.admin-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;padding:18px}
-@media(max-width:600px){.admin-grid{grid-template-columns:1fr}}
-.admin-block{background:rgba(255,255,255,0.025);border:1px solid var(--border);border-radius:13px;padding:16px}
-.admin-block-title{font-family:'Syne',sans-serif;font-size:11px;font-weight:700;color:var(--text-dim);
-  text-transform:uppercase;letter-spacing:1.2px;margin-bottom:12px}
-.adm-row{display:flex;align-items:center;gap:9px;padding:7px 0;
-  border-bottom:1px solid rgba(255,255,255,0.04)}
-.adm-row:last-child{border-bottom:none}
-.adm-av{width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,var(--gold),#8b6914);
-  display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;
-  color:#000;flex-shrink:0}
-.adm-name{font-size:12.5px;font-weight:500;flex:1}
-.adm-role{font-size:10px;color:var(--gold);text-transform:uppercase;letter-spacing:.5px}
-
-/* ── FAB (mobile expense button) ── */
-.fab{display:none;position:fixed;right:18px;bottom:calc(76px + var(--safe-bottom));z-index:80;
-  width:52px;height:52px;border-radius:50%;background:linear-gradient(135deg,var(--gold),#b8860b);
-  align-items:center;justify-content:center;font-size:24px;cursor:pointer;
-  box-shadow:0 4px 20px rgba(212,168,67,0.4);transition:all .2s;color:#000;border:none}
-.fab:active{transform:scale(.94)}
-@media(max-width:768px){.fab{display:flex}}
-
-/* ── SPLIT PREVIEW ── */
-.split-preview{background:var(--teal-dim);border:1px solid rgba(61,217,198,0.15);
-  border-radius:10px;padding:10px 14px;font-size:13px;color:var(--teal)}
-
-/* ── SETTINGS ROW ── */
-.setting-row{display:flex;justify-content:space-between;align-items:center;
-  padding:10px 0;border-bottom:1px solid rgba(255,255,255,0.04);font-size:13px}
-.setting-row:last-child{border-bottom:none}
-.setting-lbl{color:var(--text-dim)}
-
-/* ── ROOM OVERVIEW (dashboard) ── */
-.room-overview-item{display:flex;align-items:center;gap:12px;padding:12px 18px;
-  border-bottom:1px solid rgba(255,255,255,0.04)}
-.room-overview-item:last-child{border-bottom:none}
-
-/* ── EMPTY ── */
-.empty{padding:40px 20px;text-align:center;color:var(--text-dim)}
-.empty-icon{font-size:32px;margin-bottom:10px}
+.empty{padding:36px 20px;text-align:center;color:var(--text-dim)}
+.empty-icon{font-size:30px;margin-bottom:8px}
 .empty-txt{font-size:13px}
-
-/* ── CONFIRM DIALOG ── */
-.confirm-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.8);backdrop-filter:blur(6px);
-  z-index:400;display:none;align-items:center;justify-content:center;padding:20px}
-.confirm-overlay.open{display:flex}
-.confirm-box{background:#0d1420;border:1px solid var(--border-h);border-radius:16px;
-  padding:24px;max-width:340px;width:100%;text-align:center}
-.confirm-icon{font-size:36px;margin-bottom:12px}
-.confirm-title{font-family:'Syne',sans-serif;font-size:16px;font-weight:700;margin-bottom:8px}
-.confirm-msg{font-size:13px;color:var(--text-dim);margin-bottom:20px;line-height:1.5}
-.confirm-btns{display:flex;gap:10px}
-
-/* ── TENANT EDIT MODAL ── */
-.edit-section-title{font-family:'Syne',sans-serif;font-size:11px;color:var(--text-dim);
-  text-transform:uppercase;letter-spacing:1.2px;margin:16px 0 8px}
 </style>
 </head>
 <body>
 <div class="glow g1"></div>
 <div class="glow g2"></div>
-<div class="sidebar-overlay" id="sb-overlay" onclick="closeSidebar()"></div>
 
-<div class="app">
-<!-- ══ SIDEBAR ══ -->
+<!-- ══════════════════════════════════════
+     LOGIN SCREEN
+══════════════════════════════════════ -->
+<div id="login-screen">
+  <div class="login-wrap">
+    <div class="login-logo">
+      <div class="login-logo-icon">🏠</div>
+      <div class="login-logo-title">Flat 404</div>
+      <div class="login-logo-sub">Tenant Hub</div>
+    </div>
+    <div class="login-card">
+      <div class="login-tabs">
+        <div class="login-tab active" onclick="switchLoginTab('admin')">Admin Login</div>
+        <div class="login-tab" onclick="switchLoginTab('tenant')">I'm a Tenant</div>
+      </div>
+
+      <!-- ADMIN LOGIN -->
+      <div class="login-panel active" id="lp-admin">
+        <div class="login-error" id="admin-err"></div>
+        <div class="form-group">
+          <label class="form-label">Email Address</label>
+          <input type="email" class="form-input" id="admin-email" placeholder="admin@email.com" autocomplete="email">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Password</label>
+          <div class="pw-wrap">
+            <input type="password" class="form-input" id="admin-pw" placeholder="Enter password" autocomplete="current-password" onkeydown="if(event.key==='Enter')loginAdmin()">
+            <span class="pw-toggle" onclick="togglePw('admin-pw',this)">👁️</span>
+          </div>
+        </div>
+        <button class="btn-login" onclick="loginAdmin()">Login as Admin</button>
+        <div class="login-hint">Super Admin access · all permissions</div>
+      </div>
+
+      <!-- TENANT LOGIN -->
+      <div class="login-panel" id="lp-tenant">
+        <div class="login-error" id="tenant-err"></div>
+        <div class="form-group">
+          <label class="form-label">Your Name</label>
+          <input type="text" class="form-input" id="tenant-name" placeholder="Enter your name (e.g. Gerry)" autocomplete="name" onkeydown="if(event.key==='Enter')loginTenant()">
+        </div>
+        <div style="background:var(--teal-dim);border:1px solid rgba(61,217,198,0.2);border-radius:10px;
+          padding:10px 14px;font-size:12px;color:var(--teal);margin-bottom:14px;line-height:1.5">
+          💡 Enter your name exactly as listed (e.g. "Gerry", "Niña"). You can log expenses and view your room's info.
+        </div>
+        <button class="btn-login" style="background:linear-gradient(135deg,var(--teal),#1a9b8c)" onclick="loginTenant()">Enter as Tenant</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════
+     MAIN APP
+══════════════════════════════════════ -->
+<div id="app">
+<div class="sb-overlay" id="sb-overlay" onclick="closeSidebar()"></div>
+<div class="app-inner">
+
+<!-- SIDEBAR -->
 <aside class="sidebar" id="sidebar">
   <div class="sidebar-logo">
     <div class="logo-row">
@@ -429,31 +500,32 @@ textarea.form-input{resize:vertical;min-height:72px}
     </div>
   </div>
   <div class="sidebar-user">
-    <div class="user-av">AD</div>
+    <div class="user-av" id="sb-av">AD</div>
     <div>
-      <div class="user-name" id="sb-username">Admin / Landlord</div>
+      <div class="user-name" id="sb-name">Admin</div>
       <div class="user-role" id="sb-role">⚡ Super Admin</div>
     </div>
   </div>
   <nav class="sidebar-nav">
     <div class="nav-section">Main</div>
     <div class="nav-item active" onclick="go('dashboard',this)"><span class="nav-icon">📊</span>Dashboard</div>
-    <div class="nav-item" onclick="go('tenants',this)"><span class="nav-icon">👥</span>Tenants</div>
-    <div class="nav-item" onclick="go('rooms',this)"><span class="nav-icon">🚪</span>Rooms</div>
+    <div class="nav-item admin-only" onclick="go('tenants',this)"><span class="nav-icon">👥</span>Tenants</div>
+    <div class="nav-item admin-only" onclick="go('rooms',this)"><span class="nav-icon">🚪</span>Rooms</div>
     <div class="nav-section">Finance</div>
-    <div class="nav-item" onclick="go('rent',this)"><span class="nav-icon">💰</span>Rent Payments<span class="nav-badge" id="nb-rent">18</span></div>
-    <div class="nav-item" onclick="go('dewa',this)"><span class="nav-icon">⚡</span>DEWA</div>
+    <div class="nav-item admin-only" onclick="go('rent',this)"><span class="nav-icon">💰</span>Rent<span class="nav-badge" id="nb-rent" style="display:none">0</span></div>
+    <div class="nav-item admin-only" onclick="go('dewa',this)"><span class="nav-icon">⚡</span>DEWA</div>
     <div class="nav-item" onclick="go('expenses',this)"><span class="nav-icon">🧾</span>Expenses</div>
-    <div class="nav-item" onclick="go('balances',this)"><span class="nav-icon">📋</span>Balances</div>
-    <div class="nav-section">Admin</div>
-    <div class="nav-item" onclick="go('admin',this)"><span class="nav-icon">⚙️</span>Admin Panel</div>
+    <div class="nav-item admin-only" onclick="go('balances',this)"><span class="nav-icon">📋</span>Balances</div>
+    <div class="nav-section admin-only">Admin</div>
+    <div class="nav-item admin-only" onclick="go('admin',this)"><span class="nav-icon">⚙️</span>Admin Panel</div>
   </nav>
   <div class="sidebar-footer">
-    <div class="add-admin-btn" onclick="openModal('modal-addadmin')">➕ Add Admin</div>
+    <div class="add-admin-btn admin-only" onclick="openModal('m-addadmin')">➕ Add Admin</div>
+    <div class="logout-btn" onclick="doLogout()">🚪 Log Out</div>
   </div>
 </aside>
 
-<!-- ══ MAIN ══ -->
+<!-- MAIN CONTENT -->
 <div class="main">
   <div class="topbar">
     <div class="topbar-left">
@@ -463,88 +535,89 @@ textarea.form-input{resize:vertical;min-height:72px}
       <div class="page-title" id="page-title">Dashboard</div>
     </div>
     <div class="topbar-actions">
-      <button class="btn btn-ghost btn-sm" onclick="go('expenses',null);setTimeout(()=>openModal('modal-expense'),100)">➕ <span>Expense</span></button>
-      <button class="btn btn-gold btn-sm" onclick="openModal('modal-reminder')">📧 <span>Remind</span></button>
+      <button class="btn btn-ghost btn-sm" onclick="openExpenseModal()">➕ <span>Expense</span></button>
+      <button class="btn btn-gold btn-sm admin-only" onclick="openModal('m-reminder')">📧 <span>Remind</span></button>
     </div>
   </div>
 
-  <!-- ── PAGE: DASHBOARD ── -->
+  <!-- ── DASHBOARD ── -->
   <div class="page active" id="page-dashboard">
     <div class="stats-grid">
       <div class="stat-card gold"><div class="stat-icon">🏠</div><div class="stat-val">57,166</div><div class="stat-lbl">Annual Rent (AED)</div></div>
-      <div class="stat-card teal"><div class="stat-icon">👥</div><div class="stat-val" id="ds-tenants">18</div><div class="stat-lbl">Tenants</div></div>
-      <div class="stat-card red"><div class="stat-icon">⏳</div><div class="stat-val" id="ds-pending">3</div><div class="stat-lbl">Pending Cheques</div></div>
-      <div class="stat-card green"><div class="stat-icon">✅</div><div class="stat-val" id="ds-settled">0</div><div class="stat-lbl">Settled</div></div>
+      <div class="stat-card teal"><div class="stat-icon">👥</div><div class="stat-val" id="ds-ten">18</div><div class="stat-lbl">Tenants</div></div>
+      <div class="stat-card red"><div class="stat-icon">⏳</div><div class="stat-val" id="ds-pend">54</div><div class="stat-lbl">Pending Payments</div></div>
+      <div class="stat-card green"><div class="stat-icon">✅</div><div class="stat-val" id="ds-set">0</div><div class="stat-lbl">Settled</div></div>
     </div>
-    <div id="dash-two-col" style="display:grid;grid-template-columns:1.4fr 1fr;gap:18px">
-      <div class="card">
-        <div class="card-header"><div class="card-title">📅 Cheque Schedule</div><span class="pill pill-pending">3 Upcoming</span></div>
-        <div id="dash-cheques"></div>
+    <div id="dash-grid" style="display:grid;gap:18px">
+      <div style="display:grid;grid-template-columns:1.4fr 1fr;gap:18px" id="dash-two">
+        <div class="card">
+          <div class="card-header"><div class="card-title">📅 Cheque Schedule</div><span class="pill pill-pending">3 Upcoming</span></div>
+          <div id="dash-cheques"></div>
+        </div>
+        <div class="card">
+          <div class="card-header"><div class="card-title">🏡 Room Rates</div></div>
+          <div id="dash-rooms"></div>
+        </div>
       </div>
       <div class="card">
-        <div class="card-header"><div class="card-title">🏡 Rooms</div></div>
-        <div id="dash-rooms"></div>
+        <div class="card-header"><div class="card-title">🧾 Recent Expenses</div><button class="btn btn-ghost btn-sm" onclick="go('expenses',null)">View All</button></div>
+        <div id="dash-exps"></div>
       </div>
-    </div>
-    <div class="card" style="margin-top:18px">
-      <div class="card-header"><div class="card-title">🧾 Recent Expenses</div><button class="btn btn-ghost btn-sm" onclick="go('expenses',null)">View All</button></div>
-      <div id="dash-expenses"></div>
     </div>
   </div>
 
-  <!-- ── PAGE: TENANTS ── -->
+  <!-- ── TENANTS (admin only) ── -->
   <div class="page" id="page-tenants">
     <div class="card">
       <div class="card-header">
         <div class="card-title">👥 All Tenants</div>
-        <span style="font-size:12px;color:var(--text-dim)" id="ten-count">18 residents</span>
+        <span style="font-size:12px;color:var(--text-dim)" id="ten-count">18</span>
       </div>
       <div class="table-wrap">
-        <table><thead><tr>
-          <th>#</th><th>Name</th><th>Room</th><th>Share/Cheque</th><th>Gender</th><th>Edit</th>
-        </tr></thead><tbody id="tenants-tbody"></tbody></table>
+        <table><thead><tr><th>#</th><th>Name</th><th>Room</th><th>Share/Cheque</th><th>Gender</th><th>Edit</th></tr></thead>
+        <tbody id="ten-tbody"></tbody></table>
       </div>
     </div>
   </div>
 
-  <!-- ── PAGE: ROOMS ── -->
+  <!-- ── ROOMS (admin only) ── -->
   <div class="page" id="page-rooms">
-    <div class="card" style="margin-bottom:0;border-bottom:none;border-radius:18px 18px 0 0">
+    <div class="card" style="margin-bottom:0;border-radius:18px 18px 0 0">
       <div class="card-header">
         <div class="card-title">🚪 Rooms & Partitions</div>
-        <button class="btn btn-gold btn-sm" onclick="openModal('modal-editroom')">✏️ Edit Rates</button>
+        <button class="btn btn-gold btn-sm" onclick="openEditRates()">✏️ Edit Rates</button>
       </div>
     </div>
-    <div class="rooms-grid" id="rooms-grid" style="padding-top:14px"></div>
+    <div class="rooms-grid" id="rooms-grid" style="padding-top:12px"></div>
   </div>
 
-  <!-- ── PAGE: RENT ── -->
+  <!-- ── RENT (admin only) ── -->
   <div class="page" id="page-rent">
     <div class="card">
       <div class="card-header"><div class="card-title">💰 Rent Payments</div></div>
-      <div class="tabs" id="rent-tabs">
-        <div class="tab active" onclick="switchTab('rent','c1',this)">Cheque 1 — Apr</div>
-        <div class="tab" onclick="switchTab('rent','c2',this)">Cheque 2 — Jun</div>
-        <div class="tab" onclick="switchTab('rent','c3',this)">Cheque 3 — Aug</div>
+      <div class="tabs">
+        <div class="tab active" onclick="switchTab('rent','r1',this)">Cheque 1 — Apr</div>
+        <div class="tab" onclick="switchTab('rent','r2',this)">Cheque 2 — Jun</div>
+        <div class="tab" onclick="switchTab('rent','r3',this)">Cheque 3 — Aug</div>
       </div>
-      <div class="tab-content active" id="rent-c1"><div class="table-wrap"><table><thead><tr><th>Tenant</th><th>Room</th><th>Share</th><th>Status</th><th>Paid</th><th></th></tr></thead><tbody id="rtb1"></tbody></table></div></div>
-      <div class="tab-content" id="rent-c2"><div class="table-wrap"><table><thead><tr><th>Tenant</th><th>Room</th><th>Share</th><th>Status</th><th>Paid</th><th></th></tr></thead><tbody id="rtb2"></tbody></table></div></div>
-      <div class="tab-content" id="rent-c3"><div class="table-wrap"><table><thead><tr><th>Tenant</th><th>Room</th><th>Share</th><th>Status</th><th>Paid</th><th></th></tr></thead><tbody id="rtb3"></tbody></table></div></div>
+      <div class="tab-content active" id="rent-r1"><div class="table-wrap"><table><thead><tr><th>Tenant</th><th>Room</th><th>Share</th><th>Status</th><th>Date</th><th></th></tr></thead><tbody id="rtb1"></tbody></table></div></div>
+      <div class="tab-content" id="rent-r2"><div class="table-wrap"><table><thead><tr><th>Tenant</th><th>Room</th><th>Share</th><th>Status</th><th>Date</th><th></th></tr></thead><tbody id="rtb2"></tbody></table></div></div>
+      <div class="tab-content" id="rent-r3"><div class="table-wrap"><table><thead><tr><th>Tenant</th><th>Room</th><th>Share</th><th>Status</th><th>Date</th><th></th></tr></thead><tbody id="rtb3"></tbody></table></div></div>
     </div>
   </div>
 
-  <!-- ── PAGE: DEWA ── -->
+  <!-- ── DEWA (admin only) ── -->
   <div class="page" id="page-dewa">
     <div class="stats-grid" style="grid-template-columns:repeat(3,1fr)">
-      <div class="stat-card gold"><div class="stat-icon">⚡</div><div class="stat-val" id="dewa-bill-disp">—</div><div class="stat-lbl">Monthly Bill</div></div>
-      <div class="stat-card teal"><div class="stat-icon">👤</div><div class="stat-val" id="dewa-ph">—</div><div class="stat-lbl">Per Person</div></div>
-      <div class="stat-card green"><div class="stat-icon">✅</div><div class="stat-val" id="dewa-paid-count">0</div><div class="stat-lbl">Settled</div></div>
+      <div class="stat-card gold"><div class="stat-icon">⚡</div><div class="stat-val" id="dw-bill">—</div><div class="stat-lbl">Monthly Bill</div></div>
+      <div class="stat-card teal"><div class="stat-icon">👤</div><div class="stat-val" id="dw-ph">—</div><div class="stat-lbl">Per Person</div></div>
+      <div class="stat-card green"><div class="stat-icon">✅</div><div class="stat-val" id="dw-settled">0</div><div class="stat-lbl">Settled</div></div>
     </div>
     <div class="card">
       <div class="card-header">
         <div class="card-title">⚡ DEWA Tracker</div>
         <div style="display:flex;align-items:center;gap:8px">
-          <input type="number" id="dewa-input" placeholder="AED bill" class="form-input" style="width:130px;padding:8px 12px;font-family:'Syne',sans-serif;font-weight:700;color:var(--gold)" oninput="onDewaInput(this.value)">
+          <input type="number" id="dewa-inp" placeholder="AED" class="form-input" style="width:120px;padding:8px 12px;font-family:'Syne',sans-serif;font-weight:700;color:var(--gold)" oninput="onDewaInput(this.value)">
           <button class="btn btn-gold btn-sm" onclick="saveDewa()">Save</button>
         </div>
       </div>
@@ -553,83 +626,55 @@ textarea.form-input{resize:vertical;min-height:72px}
     </div>
   </div>
 
-  <!-- ── PAGE: EXPENSES ── -->
+  <!-- ── EXPENSES (all users) ── -->
   <div class="page" id="page-expenses">
-    <div style="display:grid;grid-template-columns:1fr 1.2fr;gap:18px;align-items:start" id="exp-layout">
+    <div id="exp-layout" style="display:grid;gap:18px;grid-template-columns:1fr 1.2fr;align-items:start">
       <div class="card" style="margin-bottom:0" id="exp-form-card">
         <div class="card-header"><div class="card-title">➕ Log Expense</div></div>
-        <div style="padding:18px;display:flex;flex-direction:column;gap:12px" id="exp-form-inner">
-          <div class="form-group">
-            <label class="form-label">Date</label>
-            <input type="date" class="form-input" id="ef-date">
-          </div>
+        <div style="padding:16px;display:flex;flex-direction:column;gap:11px">
           <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
-            <div class="form-group">
-              <label class="form-label">Category</label>
-              <select class="form-input" id="ef-cat">
-                <option value="Gas">⛽ Gas</option>
-                <option value="Consumables">🧴 Consumables</option>
-                <option value="Cleaning">🧹 Cleaning</option>
-                <option value="Entertainment">🎉 Entertainment</option>
-                <option value="Maintenance">🔧 Maintenance</option>
-                <option value="Food">🍜 Food</option>
-                <option value="Other">📦 Other</option>
-              </select>
-            </div>
-            <div class="form-group">
-              <label class="form-label">Amount (AED)</label>
-              <input type="number" class="form-input" id="ef-amt" placeholder="0.00" step="0.01" oninput="onExpAmt()">
-            </div>
+            <div class="form-group"><label class="form-label">Date</label><input type="date" class="form-input" id="ef-date"></div>
+            <div class="form-group"><label class="form-label">Amount (AED)</label><input type="number" class="form-input" id="ef-amt" placeholder="0.00" step="0.01" oninput="onExpAmt()"></div>
           </div>
-          <div class="form-group">
-            <label class="form-label">Description</label>
-            <input type="text" class="form-input" id="ef-desc" placeholder="e.g. Gas refill, Toilet rolls">
+          <div class="form-group"><label class="form-label">Category</label>
+            <select class="form-input" id="ef-cat">
+              <option value="Gas">⛽ Gas</option><option value="Consumables">🧴 Consumables</option>
+              <option value="Cleaning">🧹 Cleaning</option><option value="Entertainment">🎉 Entertainment</option>
+              <option value="Maintenance">🔧 Maintenance</option><option value="Food">🍜 Food</option>
+              <option value="Other">📦 Other</option>
+            </select>
           </div>
-          <div class="form-group">
-            <label class="form-label">Paid By</label>
-            <select class="form-input" id="ef-paidby"></select>
-          </div>
-          <div class="form-group">
-            <label class="form-label">Split Among</label>
+          <div class="form-group"><label class="form-label">Description</label><input type="text" class="form-input" id="ef-desc" placeholder="e.g. Gas refill, toilet rolls..."></div>
+          <div class="form-group"><label class="form-label">Split Among</label>
             <select class="form-input" id="ef-split" onchange="onSplitChange()">
               <option value="All Tenants">All Tenants (18 pax)</option>
-              <option value="Boys Only">Boys Only (11 pax)</option>
-              <option value="Girls Only">Girls Only (7 pax)</option>
-              <option value="Masters Bedroom">Masters Bedroom (5 pax)</option>
-              <option value="Kids Room">Kids Room (4 pax)</option>
-              <option value="Maids Room">Maids Room (2 pax)</option>
-              <option value="Room 1">Room 1 (3 pax)</option>
-              <option value="Partition 1">Partition 1 (2 pax)</option>
-              <option value="Partition 2">Partition 2 (3 pax)</option>
+              <option value="Boys Only">Boys Only</option><option value="Girls Only">Girls Only</option>
+              <option value="Masters Bedroom">Masters Bedroom</option><option value="Kids Room">Kids Room</option>
+              <option value="Maids Room">Maids Room</option><option value="Room 1">Room 1</option>
+              <option value="Partition 1">Partition 1</option><option value="Partition 2">Partition 2</option>
               <option value="Custom">✏️ Custom — Pick Tenants</option>
             </select>
           </div>
-          <div id="custom-tenant-picker" style="display:none">
-            <label class="form-label" style="margin-bottom:6px;display:block">Select Tenants</label>
-            <div class="tenant-select-grid" id="tenant-toggle-grid"></div>
-            <div id="custom-split-preview" style="margin-top:8px;display:none" class="split-preview">
-              <strong id="csp-amt">AED 0.00</strong> per person · <span id="csp-who">0 selected</span>
+          <div id="custom-picker" style="display:none">
+            <div class="tenant-select-grid" id="custom-grid"></div>
+            <div id="custom-preview" style="display:none;margin-top:8px" class="split-preview">
+              <strong id="cp-amt">AED 0.00</strong>/person · <span id="cp-who">0 selected</span>
             </div>
           </div>
-          <div id="split-preview-box" style="display:none" class="split-preview">
-            Per person: <strong id="spl-pp">AED 0.00</strong> · <span id="spl-who">18 pax</span>
+          <div id="split-preview" style="display:none" class="split-preview">
+            Per person: <strong id="sp-pp">AED 0.00</strong> · <span id="sp-who"></span>
           </div>
           <div class="form-group">
             <label class="form-label">Receipt Photo (optional)</label>
-            <label class="receipt-upload-btn" for="receipt-input">
-              <span>📷</span><span>Tap to upload receipt</span>
-            </label>
-            <input type="file" id="receipt-input" accept="image/*" capture="environment" onchange="handleReceiptUpload(this)">
-            <div id="receipt-preview-area"></div>
+            <label class="receipt-upload-btn" for="ef-receipt">📷 Upload receipt</label>
+            <input type="file" id="ef-receipt" accept="image/*" capture="environment" style="display:none" onchange="handleReceipt(this,'ef')">
+            <div id="ef-receipt-preview"></div>
           </div>
-          <div class="form-group">
-            <label class="form-label">Notes</label>
-            <textarea class="form-input" id="ef-notes" placeholder="Optional..."></textarea>
-          </div>
-          <button class="btn btn-gold" style="width:100%;justify-content:center;padding:13px;font-size:14px" onclick="submitExpense()">➕ Add Expense</button>
+          <div class="form-group"><label class="form-label">Notes</label><textarea class="form-input" id="ef-notes" placeholder="Optional..."></textarea></div>
+          <button class="btn btn-gold" style="width:100%;justify-content:center;padding:13px;font-size:14px" onclick="submitExp()">➕ Add Expense</button>
         </div>
       </div>
-      <div class="card" style="margin-bottom:0" id="exp-list-card">
+      <div class="card" style="margin-bottom:0">
         <div class="card-header">
           <div class="card-title">🧾 Expense Log</div>
           <span style="font-size:12px;color:var(--text-dim)" id="exp-total-lbl">AED 0</span>
@@ -639,19 +684,18 @@ textarea.form-input{resize:vertical;min-height:72px}
     </div>
   </div>
 
-  <!-- ── PAGE: BALANCES ── -->
+  <!-- ── BALANCES (admin only) ── -->
   <div class="page" id="page-balances">
     <div class="card">
-      <div class="card-header"><div class="card-title">📋 All Balances</div><span class="pill pill-pending">🔒 Admin</span></div>
+      <div class="card-header"><div class="card-title">📋 All Balances</div><span class="pill pill-pending">🔒 Admin Only</span></div>
       <div class="table-wrap">
-        <table><thead><tr>
-          <th>Tenant</th><th>Room</th><th>Rent Due</th><th>Rent Paid</th><th>DEWA</th><th>Expenses</th><th>Balance</th><th>Status</th>
-        </tr></thead><tbody id="bal-tbody"></tbody></table>
+        <table><thead><tr><th>Tenant</th><th>Room</th><th>Rent Due</th><th>Rent Paid</th><th>DEWA</th><th>Expenses</th><th>Balance</th><th>Status</th></tr></thead>
+        <tbody id="bal-tbody"></tbody></table>
       </div>
     </div>
   </div>
 
-  <!-- ── PAGE: ADMIN ── -->
+  <!-- ── ADMIN PANEL ── -->
   <div class="page" id="page-admin">
     <div class="card">
       <div class="card-header"><div class="card-title">⚙️ Admin Panel</div><span class="pill" style="background:var(--gold-dim);color:var(--gold)">Super Admin</span></div>
@@ -659,7 +703,7 @@ textarea.form-input{resize:vertical;min-height:72px}
         <div class="admin-block">
           <div class="admin-block-title">Admin Users</div>
           <div id="admin-user-list"></div>
-          <button class="btn btn-ghost" style="width:100%;margin-top:12px;justify-content:center" onclick="openModal('modal-addadmin')">➕ Add Admin</button>
+          <button class="btn btn-ghost btn-sm" style="width:100%;margin-top:10px;justify-content:center" onclick="openModal('m-addadmin')">➕ Add Admin</button>
         </div>
         <div class="admin-block">
           <div class="admin-block-title">Settings</div>
@@ -668,55 +712,52 @@ textarea.form-input{resize:vertical;min-height:72px}
         <div class="admin-block" style="grid-column:1/-1">
           <div class="admin-block-title">Quick Actions</div>
           <div style="display:flex;gap:8px;flex-wrap:wrap">
-            <button class="btn btn-gold" onclick="openModal('modal-reminder')">📧 Send Reminders</button>
-            <button class="btn btn-ghost" onclick="exportCSV()">📤 Export CSV</button>
-            <button class="btn btn-ghost" onclick="genReport()">📋 Report</button>
+            <button class="btn btn-gold btn-sm" onclick="openModal('m-reminder')">📧 Reminders</button>
+            <button class="btn btn-ghost btn-sm" onclick="exportCSV()">📤 Export CSV</button>
+            <button class="btn btn-ghost btn-sm" onclick="genReport()">📋 Report</button>
           </div>
         </div>
       </div>
     </div>
   </div>
+
 </div><!-- /.main -->
-</div><!-- /.app -->
+</div><!-- /.app-inner -->
+</div><!-- /#app -->
 
 <!-- ══ BOTTOM NAV ══ -->
 <div class="bottom-nav" id="bottom-nav">
-  <div class="bn-item active" onclick="go('dashboard',null);bnActive(this)" id="bn-dashboard">
-    <div class="bn-icon">📊</div>Home
-  </div>
-  <div class="bn-item" onclick="go('rent',null);bnActive(this)" id="bn-rent">
+  <div class="bn-item active" onclick="go('dashboard',null);bnActive(this)"><div class="bn-icon">📊</div>Home</div>
+  <div class="bn-item admin-only" onclick="go('rent',null);bnActive(this)" id="bn-rent">
     <div class="bn-icon">💰</div>Rent
-    <div class="bn-badge" id="bb-rent">18</div>
+    <div class="bn-badge" id="bb-rent" style="display:none">0</div>
   </div>
-  <div class="bn-item" onclick="go('dewa',null);bnActive(this)" id="bn-dewa">
-    <div class="bn-icon">⚡</div>DEWA
-  </div>
-  <div class="bn-item" onclick="go('expenses',null);bnActive(this)" id="bn-expenses">
-    <div class="bn-icon">🧾</div>Expenses
-  </div>
-  <div class="bn-item" onclick="go('admin',null);bnActive(this)" id="bn-admin">
-    <div class="bn-icon">⚙️</div>Admin
-  </div>
+  <div class="bn-item admin-only" onclick="go('dewa',null);bnActive(this)"><div class="bn-icon">⚡</div>DEWA</div>
+  <div class="bn-item" onclick="go('expenses',null);bnActive(this)"><div class="bn-icon">🧾</div>Expenses</div>
+  <div class="bn-item admin-only" onclick="go('admin',null);bnActive(this)"><div class="bn-icon">⚙️</div>Admin</div>
 </div>
 
-<!-- ══ FAB ══ -->
-<button class="fab" onclick="go('expenses',null);setTimeout(()=>scrollToExpForm(),200)" title="Log expense">➕</button>
+<!-- FAB -->
+<button class="fab" id="fab-btn" onclick="openExpenseModal()">➕</button>
 
-<!-- ══ LIGHTBOX ══ -->
+<!-- LIGHTBOX -->
 <div class="lightbox" id="lightbox" onclick="closeLightbox()">
-  <div class="lightbox-close" onclick="closeLightbox()">✕</div>
+  <div class="lightbox-close">✕</div>
   <img id="lb-img" src="" alt="Receipt">
 </div>
 
+<!-- TOAST -->
+<div class="toast" id="toast">✅ Done</div>
+
 <!-- ══ MODALS ══ -->
 
-<!-- Add Expense (mobile sheet) -->
-<div class="overlay" id="modal-expense">
+<!-- Mobile Expense Sheet -->
+<div class="overlay" id="m-expense">
   <div class="modal">
     <div class="modal-handle"></div>
-    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px">
-      <div class="modal-title" style="margin:0">➕ Log Expense</div>
-      <div class="modal-close" onclick="closeModal('modal-expense')">✕</div>
+    <div class="modal-hdr">
+      <div class="modal-title">➕ Log Expense</div>
+      <div class="modal-close" onclick="closeModal('m-expense')">✕</div>
     </div>
     <div style="display:flex;flex-direction:column;gap:11px">
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
@@ -732,134 +773,122 @@ textarea.form-input{resize:vertical;min-height:72px}
         </select>
       </div>
       <div class="form-group"><label class="form-label">Description</label><input type="text" class="form-input" id="mef-desc" placeholder="e.g. Gas refill"></div>
-      <div class="form-group"><label class="form-label">Paid By</label><select class="form-input" id="mef-paidby"></select></div>
       <div class="form-group"><label class="form-label">Split Among</label>
         <select class="form-input" id="mef-split" onchange="onMSplitChange()">
-          <option value="All Tenants">All Tenants (18 pax)</option>
-          <option value="Boys Only">Boys Only (11 pax)</option>
-          <option value="Girls Only">Girls Only (7 pax)</option>
-          <option value="Masters Bedroom">Masters Bedroom (5 pax)</option>
-          <option value="Kids Room">Kids Room (4 pax)</option>
-          <option value="Maids Room">Maids Room (2 pax)</option>
-          <option value="Room 1">Room 1 (3 pax)</option>
-          <option value="Partition 1">Partition 1 (2 pax)</option>
-          <option value="Partition 2">Partition 2 (3 pax)</option>
-          <option value="Custom">✏️ Custom</option>
+          <option value="All Tenants">All Tenants</option><option value="Boys Only">Boys Only</option>
+          <option value="Girls Only">Girls Only</option><option value="Masters Bedroom">Masters Bedroom</option>
+          <option value="Kids Room">Kids Room</option><option value="Maids Room">Maids Room</option>
+          <option value="Room 1">Room 1</option><option value="Partition 1">Partition 1</option>
+          <option value="Partition 2">Partition 2</option><option value="Custom">✏️ Custom</option>
         </select>
       </div>
       <div id="m-custom-picker" style="display:none">
-        <div class="tenant-select-grid" id="m-tenant-grid"></div>
-        <div id="m-custom-preview" style="margin-top:8px;display:none" class="split-preview">
+        <div class="tenant-select-grid" id="m-custom-grid"></div>
+        <div id="m-custom-preview" style="display:none;margin-top:8px" class="split-preview">
           <strong id="mcp-amt">AED 0.00</strong>/person · <span id="mcp-who">0 selected</span>
         </div>
       </div>
       <div id="m-split-preview" style="display:none" class="split-preview">
-        Per person: <strong id="mspl-pp">AED 0.00</strong> · <span id="mspl-who"></span>
+        Per person: <strong id="msp-pp">AED 0.00</strong> · <span id="msp-who"></span>
       </div>
       <div class="form-group">
         <label class="form-label">Receipt Photo</label>
-        <label class="receipt-upload-btn" for="m-receipt-input">📷 Tap to upload</label>
-        <input type="file" id="m-receipt-input" accept="image/*" capture="environment" style="display:none" onchange="handleMReceiptUpload(this)">
-        <div id="m-receipt-preview"></div>
+        <label class="receipt-upload-btn" for="mef-receipt">📷 Tap to upload receipt</label>
+        <input type="file" id="mef-receipt" accept="image/*" capture="environment" style="display:none" onchange="handleReceipt(this,'mef')">
+        <div id="mef-receipt-preview"></div>
       </div>
-      <button class="btn btn-gold" style="width:100%;justify-content:center;padding:13px;margin-top:4px" onclick="submitMobileExpense()">➕ Add Expense</button>
+      <button class="btn btn-gold" style="width:100%;justify-content:center;padding:13px;margin-top:4px" onclick="submitMobileExp()">➕ Add Expense</button>
     </div>
   </div>
 </div>
 
-<!-- Edit Tenant Modal -->
-<div class="overlay" id="modal-edittenant">
+<!-- Edit Tenant -->
+<div class="overlay" id="m-edittenant">
   <div class="modal">
     <div class="modal-handle"></div>
-    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px">
-      <div class="modal-title" style="margin:0">✏️ Edit Tenant</div>
-      <div class="modal-close" onclick="closeModal('modal-edittenant')">✕</div>
+    <div class="modal-hdr">
+      <div class="modal-title">✏️ Edit Tenant</div>
+      <div class="modal-close" onclick="closeModal('m-edittenant')">✕</div>
     </div>
     <div style="display:flex;flex-direction:column;gap:12px">
       <div class="form-group"><label class="form-label">Name</label><input type="text" class="form-input" id="et-name"></div>
       <div class="form-group"><label class="form-label">Gender / Type</label>
         <select class="form-input" id="et-gender">
-          <option value="Male">♂ Male</option>
-          <option value="Female">♀ Female</option>
-          <option value="Other">⚧ Other</option>
-          <option value="Kids">👶 Kids</option>
+          <option value="Male">♂ Male</option><option value="Female">♀ Female</option>
+          <option value="Other">⚧ Other</option><option value="Kids">👶 Kids</option>
         </select>
       </div>
-      <div class="form-group"><label class="form-label">Room / Partition</label>
-        <select class="form-input" id="et-room"></select>
-      </div>
+      <div class="form-group"><label class="form-label">Room / Partition</label><select class="form-input" id="et-room"></select></div>
       <input type="hidden" id="et-idx">
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:4px">
-        <button class="btn btn-ghost" onclick="closeModal('modal-edittenant')">Cancel</button>
+        <button class="btn btn-ghost" onclick="closeModal('m-edittenant')">Cancel</button>
         <button class="btn btn-gold" onclick="saveTenantEdit()">Save</button>
       </div>
     </div>
   </div>
 </div>
 
-<!-- Edit Room Rates Modal -->
-<div class="overlay" id="modal-editroom">
+<!-- Edit Room Rates -->
+<div class="overlay" id="m-editrates">
   <div class="modal">
     <div class="modal-handle"></div>
-    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px">
-      <div class="modal-title" style="margin:0">✏️ Edit Room Rates</div>
-      <div class="modal-close" onclick="closeModal('modal-editroom')">✕</div>
+    <div class="modal-hdr">
+      <div class="modal-title">✏️ Edit Room Rates</div>
+      <div class="modal-close" onclick="closeModal('m-editrates')">✕</div>
     </div>
     <div style="display:flex;flex-direction:column;gap:10px" id="room-rate-inputs"></div>
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:16px">
-      <button class="btn btn-ghost" onclick="closeModal('modal-editroom')">Cancel</button>
-      <button class="btn btn-gold" onclick="saveRoomRates()">Save Rates</button>
+      <button class="btn btn-ghost" onclick="closeModal('m-editrates')">Cancel</button>
+      <button class="btn btn-gold" onclick="saveRates()">Save Rates</button>
     </div>
   </div>
 </div>
 
-<!-- Add Admin Modal -->
-<div class="overlay" id="modal-addadmin">
+<!-- Add Admin -->
+<div class="overlay" id="m-addadmin">
   <div class="modal">
     <div class="modal-handle"></div>
-    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px">
-      <div class="modal-title" style="margin:0">➕ Add Admin</div>
-      <div class="modal-close" onclick="closeModal('modal-addadmin')">✕</div>
+    <div class="modal-hdr">
+      <div class="modal-title">➕ Add Admin</div>
+      <div class="modal-close" onclick="closeModal('m-addadmin')">✕</div>
     </div>
     <div style="display:flex;flex-direction:column;gap:12px">
       <div class="form-group"><label class="form-label">Name</label><input type="text" class="form-input" id="aa-name" placeholder="Admin name"></div>
       <div class="form-group"><label class="form-label">Email</label><input type="email" class="form-input" id="aa-email" placeholder="email@example.com"></div>
-      <div class="form-group"><label class="form-label">Role</label>
-        <select class="form-input" id="aa-role"><option>Admin</option><option>Super Admin</option></select>
-      </div>
+      <div class="form-group"><label class="form-label">Role</label><select class="form-input" id="aa-role"><option>Admin</option><option>Super Admin</option></select></div>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:4px">
-        <button class="btn btn-ghost" onclick="closeModal('modal-addadmin')">Cancel</button>
+        <button class="btn btn-ghost" onclick="closeModal('m-addadmin')">Cancel</button>
         <button class="btn btn-gold" onclick="confirmAddAdmin()">Add</button>
       </div>
     </div>
   </div>
 </div>
 
-<!-- Reminder Modal -->
-<div class="overlay" id="modal-reminder">
+<!-- Reminder -->
+<div class="overlay" id="m-reminder">
   <div class="modal">
     <div class="modal-handle"></div>
-    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px">
-      <div class="modal-title" style="margin:0">📧 Send Reminders</div>
-      <div class="modal-close" onclick="closeModal('modal-reminder')">✕</div>
+    <div class="modal-hdr">
+      <div class="modal-title">📧 Send Reminders</div>
+      <div class="modal-close" onclick="closeModal('m-reminder')">✕</div>
     </div>
     <div style="background:var(--gold-dim);border:1px solid rgba(212,168,67,.2);border-radius:12px;padding:14px;margin-bottom:18px;font-size:13px;color:var(--text-dim)">
       <strong style="color:var(--gold);display:block;margin-bottom:6px">REMINDER PREVIEW</strong>
       Subject: [Flat 404] Payment Reminder<br>Next cheque: April 10, 2026 — AED 19,000
     </div>
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
-      <button class="btn btn-ghost" onclick="closeModal('modal-reminder')">Cancel</button>
+      <button class="btn btn-ghost" onclick="closeModal('m-reminder')">Cancel</button>
       <button class="btn btn-gold" onclick="sendReminders()">📧 Send Now</button>
     </div>
   </div>
 </div>
 
 <!-- Delete Confirm -->
-<div class="confirm-overlay" id="confirm-overlay">
+<div class="confirm-overlay" id="confirm-del">
   <div class="confirm-box">
     <div class="confirm-icon">🗑️</div>
     <div class="confirm-title">Delete Expense?</div>
-    <div class="confirm-msg" id="confirm-msg">This expense will be permanently removed.</div>
+    <div class="confirm-msg" id="confirm-msg">This will be permanently removed.</div>
     <div class="confirm-btns">
       <button class="btn btn-ghost" style="flex:1;justify-content:center" onclick="closeConfirm()">Cancel</button>
       <button class="btn btn-red" style="flex:1;justify-content:center" onclick="confirmDelete()">Delete</button>
@@ -867,104 +896,177 @@ textarea.form-input{resize:vertical;min-height:72px}
   </div>
 </div>
 
-<!-- Toast -->
-<div class="toast" id="toast">✅ Done</div>
-
+<!-- ═══════════════════════ SCRIPT ═══════════════════════ -->
 <script>
-// ══════════════════════════════════════════════════════
+// ────────────────────────────────────────────────────
+// AUTH
+// ────────────────────────────────────────────────────
+const SUPER_ADMIN = { email: 'room404master@gmail.com', password: 'bahalanamo' };
+
+let currentUser = null; // { type:'admin'|'tenant', name:string }
+
+function switchLoginTab(tab) {
+  document.querySelectorAll('.login-tab').forEach((t,i) => t.classList.toggle('active', (i===0&&tab==='admin')||(i===1&&tab==='tenant')));
+  document.getElementById('lp-admin').classList.toggle('active', tab==='admin');
+  document.getElementById('lp-tenant').classList.toggle('active', tab==='tenant');
+}
+
+function togglePw(id, btn) {
+  const inp = document.getElementById(id);
+  inp.type = inp.type === 'password' ? 'text' : 'password';
+  btn.textContent = inp.type === 'password' ? '👁️' : '🙈';
+}
+
+function showLoginErr(id, msg) {
+  const el = document.getElementById(id);
+  el.textContent = msg; el.style.display = 'block';
+  setTimeout(() => { el.style.display = 'none'; }, 3500);
+}
+
+function loginAdmin() {
+  const email = document.getElementById('admin-email').value.trim().toLowerCase();
+  const pw    = document.getElementById('admin-pw').value;
+  if (email !== SUPER_ADMIN.email || pw !== SUPER_ADMIN.password) {
+    showLoginErr('admin-err', '❌ Incorrect email or password.');
+    return;
+  }
+  currentUser = { type: 'admin', name: 'Admin / Landlord' };
+  startApp();
+}
+
+function loginTenant() {
+  const name = document.getElementById('tenant-name').value.trim();
+  const all  = allTenants().map(t => t.name.toLowerCase());
+  if (!name) { showLoginErr('tenant-err', '⚠️ Please enter your name.'); return; }
+  const match = allTenants().find(t => t.name.toLowerCase() === name.toLowerCase());
+  if (!match) {
+    showLoginErr('tenant-err', `❌ "${name}" is not in the tenant list. Check your spelling.`);
+    return;
+  }
+  currentUser = { type: 'tenant', name: match.name };
+  startApp();
+}
+
+function startApp() {
+  document.getElementById('login-screen').style.display = 'none';
+  document.getElementById('app').style.display = 'block';
+  applyRoleUI();
+  go('dashboard', null);
+}
+
+function applyRoleUI() {
+  const isAdmin = currentUser.type === 'admin';
+  // Sidebar user info
+  const initials = currentUser.name.split(' ').map(w=>w[0]).join('').slice(0,2).toUpperCase();
+  document.getElementById('sb-av').textContent = initials;
+  document.getElementById('sb-av').className   = 'user-av' + (isAdmin ? '' : ' tenant-av');
+  document.getElementById('sb-name').textContent = currentUser.name;
+  document.getElementById('sb-role').textContent  = isAdmin ? '⚡ Super Admin' : '🏠 Tenant';
+  document.getElementById('sb-role').className     = 'user-role' + (isAdmin ? '' : ' tenant-role');
+  // Show/hide admin-only elements
+  document.querySelectorAll('.admin-only').forEach(el => {
+    el.style.display = isAdmin ? '' : 'none';
+  });
+  // Bottom nav: for tenant, show only Home & Expenses
+  if (!isAdmin) {
+    document.getElementById('bottom-nav').style.gridTemplateColumns = '1fr 1fr';
+  }
+}
+
+function doLogout() {
+  currentUser = null;
+  document.getElementById('app').style.display = 'none';
+  document.getElementById('login-screen').style.display = 'flex';
+  document.getElementById('admin-email').value = '';
+  document.getElementById('admin-pw').value    = '';
+  document.getElementById('tenant-name').value = '';
+  toast('Logged out', 'warn');
+}
+
+// ────────────────────────────────────────────────────
 // DATA
-// ══════════════════════════════════════════════════════
-const ROOMS_DATA = [
-  {name:"Masters Bedroom", icon:"🛏️", rate:4479.06, tenants:["Gerry","Cheng","Abegail","Clint","Amit"]},
-  {name:"Kids Room",       icon:"🧒", rate:3566.05, tenants:["Raymond","Arrah","Kids"]},
-  {name:"Maids Room",      icon:"🪣", rate:2163.44, tenants:["Charwin","Dev"]},
-  {name:"Room 1",          icon:"🚪", rate:4479.06, tenants:["Elden","Lyka","Sandra"]},
-  {name:"Partition 1",     icon:"🪟", rate:2239.53, tenants:["Niko","Niña"]},
-  {name:"Partition 2",     icon:"🪟", rate:2239.53, tenants:["Eric","Jessa","Francis"]},
-];
-
-const DEFAULT_GENDERS = {
-  Gerry:'Male',Cheng:'Male',Abegail:'Female',Clint:'Male',Amit:'Male',
-  Raymond:'Male',Arrah:'Female',Kids:'Kids',
-  Charwin:'Male',Dev:'Male',
-  Elden:'Male',Lyka:'Female',Sandra:'Female',
-  Niko:'Male',Niña:'Female',
-  Eric:'Male',Jessa:'Female',Francis:'Male'
+// ────────────────────────────────────────────────────
+let S = {
+  rooms: [
+    {name:"Masters Bedroom",icon:"🛏️",rate:4479.06,tenants:["Gerry","Cheng","Abegail","Clint","Amit"]},
+    {name:"Kids Room",      icon:"🧒",rate:3566.05,tenants:["Raymond","Arrah","Kids"]},
+    {name:"Maids Room",     icon:"🪣",rate:2163.44,tenants:["Charwin","Dev"]},
+    {name:"Room 1",         icon:"🚪",rate:4479.06,tenants:["Elden","Lyka","Sandra"]},
+    {name:"Partition 1",    icon:"🪟",rate:2239.53,tenants:["Niko","Niña"]},
+    {name:"Partition 2",    icon:"🪟",rate:2239.53,tenants:["Eric","Jessa","Francis"]},
+  ],
+  genders: {Gerry:'Male',Cheng:'Male',Abegail:'Female',Clint:'Male',Amit:'Male',
+    Raymond:'Male',Arrah:'Female',Kids:'Kids',Charwin:'Male',Dev:'Male',
+    Elden:'Male',Lyka:'Female',Sandra:'Female',Niko:'Male',Niña:'Female',
+    Eric:'Male',Jessa:'Female',Francis:'Male'},
+  rentStatus: {},
+  dewaMonths: {},
+  dewaActiveMonth: new Date().getMonth(),
+  expenses: [
+    {id:1,date:'2026-03-01',desc:'Gas refill',cat:'Gas',amt:85,paidBy:'Charwin',loggedBy:'Charwin',split:'All Tenants',custom:[],perPerson:+(85/18).toFixed(2),status:'Pending',receipt:null,notes:''},
+    {id:2,date:'2026-03-05',desc:'Toilet rolls x12',cat:'Consumables',amt:42,paidBy:'Arrah',loggedBy:'Arrah',split:'All Tenants',custom:[],perPerson:+(42/18).toFixed(2),status:'Pending',receipt:null,notes:''},
+    {id:3,date:'2026-03-07',desc:'Alcoholic drinks',cat:'Entertainment',amt:220,paidBy:'Gerry',loggedBy:'Gerry',split:'Boys Only',custom:[],perPerson:+(220/11).toFixed(2),status:'Pending',receipt:null,notes:'Boys shared'},
+    {id:4,date:'2026-03-08',desc:'Cleaning supplies',cat:'Consumables',amt:60,paidBy:'Lyka',loggedBy:'Lyka',split:'All Tenants',custom:[],perPerson:+(60/18).toFixed(2),status:'Settled',receipt:null,notes:''},
+  ],
+  admins: [{name:'Admin / Landlord', role:'Super Admin', email: SUPER_ADMIN.email}],
+  nextId: 5,
+  pendingDel: null,
+  receiptData: {ef:null, mef:null},
+  customSel: {ef:[], mef:[]},
 };
-
 const MONTHS = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+const EE = {Gas:'⛽',Consumables:'🧴',Cleaning:'🧹',Entertainment:'🎉',Maintenance:'🔧',Food:'🍜',Other:'📦'};
+const EC = {Gas:'exp-gas',Consumables:'exp-other',Cleaning:'exp-clean',Entertainment:'exp-fun',Food:'exp-food',Maintenance:'exp-other',Other:'exp-other'};
+const GC = {Male:'rgba(100,120,240,0.12)',Female:'rgba(240,100,160,0.12)',Kids:'rgba(74,222,128,0.1)',Other:'rgba(255,255,255,0.05)'};
+const GT = {Male:'#a0aaff',Female:'#f0a0c0',Kids:'var(--green)',Other:'var(--text-dim)'};
 const CHEQUE_LABELS = ['Apr 10, 2026','Jun 10, 2026','Aug 10, 2026'];
 
-let state = {
-  rooms: JSON.parse(JSON.stringify(ROOMS_DATA)),
-  genders: {...DEFAULT_GENDERS},
-  rentStatus: {}, // `${name}-${cheque}` -> {paid,date}
-  dewaMonths: {}, // monthKey -> {bill, paid:{tenantName:amount}, carryover:{tenantName:amount}}
-  dewaActiveMonth: 0, // index 0-11
-  expenses: [
-    {id:1,date:'2026-03-01',desc:'Gas refill',cat:'Gas',amt:85,paidBy:'Charwin',split:'All Tenants',customTenants:[],perPerson:85/18,status:'Pending',receipt:null,notes:''},
-    {id:2,date:'2026-03-05',desc:'Toilet rolls x12',cat:'Consumables',amt:42,paidBy:'Arrah',split:'All Tenants',customTenants:[],perPerson:42/18,status:'Pending',receipt:null,notes:''},
-    {id:3,date:'2026-03-07',desc:'Alcoholic drinks',cat:'Entertainment',amt:220,paidBy:'Gerry',split:'Boys Only',customTenants:[],perPerson:220/11,status:'Pending',receipt:null,notes:'Boys shared'},
-    {id:4,date:'2026-03-08',desc:'Cleaning supplies',cat:'Consumables',amt:60,paidBy:'Lyka',split:'All Tenants',customTenants:[],perPerson:60/18,status:'Settled',receipt:null,notes:''},
-  ],
-  admins:[{name:'You (Landlord)', role:'Super Admin'}],
-  nextExpId:5,
-  pendingDelete:null,
-  receiptDataUrl:null,
-  mReceiptDataUrl:null,
-  selectedCustomTenants:[],
-  mSelectedCustomTenants:[],
-};
-
-// Init rent status
-function allTenants(){return state.rooms.flatMap(r=>r.tenants.map(t=>({name:t,room:r.name,share:r.rate/r.tenants.length})))}
-function initRentStatus(){
-  allTenants().forEach(t=>[1,2,3].forEach(c=>{
-    const k=`${t.name}-${c}`;
-    if(!state.rentStatus[k]) state.rentStatus[k]={paid:false,date:''};
+function allTenants() {
+  return S.rooms.flatMap(r => r.tenants.map(t => ({name:t, room:r.name, share: r.rate / r.tenants.length})));
+}
+function initRentStatus() {
+  allTenants().forEach(t => [1,2,3].forEach(c => {
+    const k=`${t.name}-${c}`; if(!S.rentStatus[k]) S.rentStatus[k]={paid:false,date:''};
   }));
 }
 initRentStatus();
 
-const BOYS=()=>allTenants().filter(t=>['Male'].includes(state.genders[t.name]||'Male')).map(t=>t.name);
-const GIRLS=()=>allTenants().filter(t=>['Female','Kids','Other'].includes(state.genders[t.name]||'Female')).map(t=>t.name);
-
-function getSplitTenants(split,custom=[]){
-  const at=allTenants();
-  if(split==='All Tenants') return at.map(t=>t.name);
-  if(split==='Boys Only')   return BOYS();
-  if(split==='Girls Only')  return GIRLS();
-  if(split==='Custom')      return custom;
-  const r=state.rooms.find(r=>r.name===split);
-  return r?r.tenants:at.map(t=>t.name);
+function getSplitTenants(split, custom=[]) {
+  const at = allTenants().map(t=>t.name);
+  if (split==='All Tenants') return at;
+  if (split==='Boys Only')   return allTenants().filter(t=>S.genders[t.name]==='Male').map(t=>t.name);
+  if (split==='Girls Only')  return allTenants().filter(t=>S.genders[t.name]!=='Male').map(t=>t.name);
+  if (split==='Custom')      return custom.length ? custom : at;
+  const r = S.rooms.find(r=>r.name===split);
+  return r ? r.tenants : at;
 }
 
-const EXP_EMOJI={Gas:'⛽',Consumables:'🧴',Cleaning:'🧹',Entertainment:'🎉',Maintenance:'🔧',Food:'🍜',Other:'📦'};
-const EXP_CLS={Gas:'exp-gas',Consumables:'exp-other',Cleaning:'exp-clean',Entertainment:'exp-fun',Food:'exp-food',Other:'exp-other',Maintenance:'exp-other'};
-const GEN_COLOR={Male:'rgba(100,120,240,0.12)',Female:'rgba(240,100,160,0.12)',Kids:'rgba(74,222,128,0.1)',Other:'rgba(255,255,255,0.05)'};
-const GEN_TEXT={Male:'#a0aaff',Female:'#f0a0c0',Kids:GEN_COLOR.Kids,Other:'var(--text-dim)'};
-
-// ══════════════════════════════════════════════════════
+// ────────────────────────────────────────────────────
 // NAVIGATION
-// ══════════════════════════════════════════════════════
-const PAGE_TITLES={dashboard:'Dashboard',tenants:'Tenants',rooms:'Rooms',rent:'Rent Payments',dewa:'DEWA',expenses:'Expenses',balances:'Balances',admin:'Admin Panel'};
-let currentPage='dashboard';
+// ────────────────────────────────────────────────────
+const PAGE_TITLES = {dashboard:'Dashboard',tenants:'Tenants',rooms:'Rooms',rent:'Rent Payments',dewa:'DEWA',expenses:'Expenses',balances:'Balances',admin:'Admin Panel'};
+let currentPage = 'dashboard';
 
-function go(id, navEl){
-  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
-  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
-  document.getElementById('page-'+id).classList.add('active');
-  currentPage=id;
-  if(navEl) navEl.classList.add('active');
-  else document.querySelectorAll('.nav-item').forEach(n=>{
-    if(n.getAttribute('onclick')&&n.getAttribute('onclick').includes(`'${id}'`)) n.classList.add('active');
+function go(id, navEl) {
+  // Access control
+  const adminOnly = ['tenants','rooms','rent','dewa','balances','admin'];
+  if (adminOnly.includes(id) && currentUser?.type !== 'admin') {
+    toast('🔒 Admin access required', 'warn'); return;
+  }
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  document.getElementById('page-' + id).classList.add('active');
+  currentPage = id;
+  if (navEl) navEl.classList.add('active');
+  else document.querySelectorAll('.nav-item').forEach(n => {
+    if (n.getAttribute('onclick')?.includes(`'${id}'`)) n.classList.add('active');
   });
-  document.getElementById('page-title').textContent=PAGE_TITLES[id]||id;
-  render(id);
+  document.getElementById('page-title').textContent = PAGE_TITLES[id] || id;
+  renderPage(id);
   closeSidebar();
 }
 
-function render(id){
+function renderPage(id) {
   if(id==='dashboard') renderDash();
   if(id==='tenants')   renderTenants();
   if(id==='rooms')     renderRooms();
@@ -975,173 +1077,132 @@ function render(id){
   if(id==='admin')     renderAdmin();
 }
 
-// ══════════════════════════════════════════════════════
+// ────────────────────────────────────────────────────
 // DASHBOARD
-// ══════════════════════════════════════════════════════
-function renderDash(){
-  const at=allTenants();
-  const pendingCount=Object.values(state.rentStatus).filter(s=>!s.paid).length;
-  const settledCount=Object.values(state.rentStatus).filter(s=>s.paid).length;
-  document.getElementById('ds-tenants').textContent=at.length;
-  document.getElementById('ds-pending').textContent=pendingCount;
-  document.getElementById('ds-settled').textContent=settledCount;
-
-  // Cheques
-  document.getElementById('dash-cheques').innerHTML=CHEQUE_LABELS.map((lbl,i)=>`
+// ────────────────────────────────────────────────────
+function renderDash() {
+  const at = allTenants();
+  const pend = Object.values(S.rentStatus).filter(s=>!s.paid).length;
+  const set  = Object.values(S.rentStatus).filter(s=>s.paid).length;
+  document.getElementById('ds-ten').textContent  = at.length;
+  document.getElementById('ds-pend').textContent = pend;
+  document.getElementById('ds-set').textContent  = set;
+  document.getElementById('dash-cheques').innerHTML = CHEQUE_LABELS.map((l,i)=>`
     <div class="cheque-row">
       <div class="cheque-num">${i+1}</div>
-      <div class="cheque-info">
-        <div class="cheque-date">${lbl}</div>
-        <div class="cheque-sub">AED 19,000</div>
-      </div>
+      <div class="cheque-info"><div class="cheque-date">${l}</div><div class="cheque-sub">AED 19,000</div></div>
       <span class="pill pill-pending">Upcoming</span>
     </div>`).join('');
-
-  // Rooms overview
-  document.getElementById('dash-rooms').innerHTML=state.rooms.map(r=>`
-    <div class="room-overview-item">
-      <span style="font-size:18px">${r.icon}</span>
-      <div style="flex:1">
-        <div style="font-size:13px;font-weight:500">${r.name}</div>
-        <div style="font-size:11px;color:var(--text-dim)">${r.tenants.length} pax</div>
-      </div>
-      <div style="text-align:right">
-        <div style="font-family:'Syne',sans-serif;font-weight:700;color:var(--gold);font-size:13px">${r.rate.toFixed(0)}</div>
-        <div style="font-size:10px;color:var(--text-dim)">AED</div>
-      </div>
+  document.getElementById('dash-rooms').innerHTML = S.rooms.map(r=>`
+    <div class="room-ov-item">
+      <span style="font-size:17px">${r.icon}</span>
+      <div style="flex:1"><div style="font-size:13px;font-weight:500">${r.name}</div><div style="font-size:10.5px;color:var(--text-dim)">${r.tenants.length} pax</div></div>
+      <div style="text-align:right"><div style="font-family:'Syne',sans-serif;font-weight:700;color:var(--gold);font-size:13px">${r.rate.toFixed(0)}</div><div style="font-size:10px;color:var(--text-dim)">AED</div></div>
     </div>`).join('');
-
-  // Recent expenses
-  const recent=[...state.expenses].slice(-3).reverse();
-  document.getElementById('dash-expenses').innerHTML=recent.length
-    ? recent.map(expRow).join('')
+  const recent = [...S.expenses].slice(-3).reverse();
+  document.getElementById('dash-exps').innerHTML = recent.length
+    ? recent.map(e=>expRow(e,false)).join('')
     : '<div class="empty"><div class="empty-icon">🧾</div><div class="empty-txt">No expenses yet</div></div>';
-
-  // Responsive: stack on mobile
-  const twoCol=document.getElementById('dash-two-col');
-  if(window.innerWidth<700){twoCol.style.gridTemplateColumns='1fr'}
-  else{twoCol.style.gridTemplateColumns='1.4fr 1fr'}
+  const tw=document.getElementById('dash-two');
+  if(tw) tw.style.gridTemplateColumns = window.innerWidth<700?'1fr':'1.4fr 1fr';
 }
 
-// ══════════════════════════════════════════════════════
+// ────────────────────────────────────────────────────
 // TENANTS
-// ══════════════════════════════════════════════════════
-function renderTenants(){
-  const at=allTenants();
-  document.getElementById('ten-count').textContent=`${at.length} residents`;
-  document.getElementById('tenants-tbody').innerHTML=at.map((t,i)=>{
-    const g=state.genders[t.name]||'Male';
+// ────────────────────────────────────────────────────
+function renderTenants() {
+  const at = allTenants();
+  document.getElementById('ten-count').textContent = at.length + ' residents';
+  document.getElementById('ten-tbody').innerHTML = at.map((t,i)=>{
+    const g = S.genders[t.name]||'Male';
     return `<tr>
       <td style="color:var(--text-dim);font-size:11px">${i+1}</td>
       <td style="font-weight:500">${t.name}</td>
-      <td style="font-size:12px;color:var(--text-dim)">${t.room}</td>
+      <td style="font-size:11.5px;color:var(--text-dim)">${t.room}</td>
       <td style="font-family:'Syne',sans-serif;font-weight:700;color:var(--gold);font-size:13px">${t.share.toFixed(2)}</td>
-      <td><span class="pill" style="background:${GEN_COLOR[g]||GEN_COLOR.Other};color:${GEN_TEXT[g]||GEN_TEXT.Other}">${g}</span></td>
-      <td><button class="edit-icon btn btn-ghost btn-sm" onclick="openEditTenant(${i})" title="Edit">✏️</button></td>
+      <td><span class="pill" style="background:${GC[g]||GC.Other};color:${GT[g]||GT.Other}">${g}</span></td>
+      <td><button class="btn btn-ghost btn-sm" onclick="openEditTenant(${i})" style="padding:5px 10px;font-size:11px">✏️ Edit</button></td>
     </tr>`;
   }).join('');
 }
 
-function openEditTenant(idx){
-  const at=allTenants();
-  const t=at[idx];
-  document.getElementById('et-name').value=t.name;
-  document.getElementById('et-gender').value=state.genders[t.name]||'Male';
-  document.getElementById('et-idx').value=idx;
-  // Populate room select
-  const rs=document.getElementById('et-room');
-  rs.innerHTML=state.rooms.map(r=>`<option value="${r.name}" ${r.name===t.room?'selected':''}>${r.name}</option>`).join('');
-  openModal('modal-edittenant');
+function openEditTenant(idx) {
+  const t = allTenants()[idx];
+  document.getElementById('et-name').value  = t.name;
+  document.getElementById('et-gender').value = S.genders[t.name]||'Male';
+  document.getElementById('et-idx').value   = idx;
+  document.getElementById('et-room').innerHTML = S.rooms.map(r=>`<option value="${r.name}" ${r.name===t.room?'selected':''}>${r.name}</option>`).join('');
+  openModal('m-edittenant');
 }
 
-function saveTenantEdit(){
-  const idx=parseInt(document.getElementById('et-idx').value);
-  const newName=document.getElementById('et-name').value.trim();
-  const newGender=document.getElementById('et-gender').value;
-  const newRoom=document.getElementById('et-room').value;
-  if(!newName){toast('⚠️ Name required','warn');return;}
-  const at=allTenants();
-  const t=at[idx];
-  const oldName=t.name;
-  const oldRoom=t.room;
-
-  // Remove from old room
-  const oldRoomObj=state.rooms.find(r=>r.name===oldRoom);
-  if(oldRoomObj){
-    oldRoomObj.tenants=oldRoomObj.tenants.filter(n=>n!==oldName);
-  }
-  // Add to new room
-  const newRoomObj=state.rooms.find(r=>r.name===newRoom);
-  if(newRoomObj&&!newRoomObj.tenants.includes(newName)){
-    newRoomObj.tenants.push(newName);
-  }
-  // Update gender
-  delete state.genders[oldName];
-  state.genders[newName]=newGender;
-  // Update rent status keys if name changed
-  if(newName!==oldName){
-    [1,2,3].forEach(c=>{
-      state.rentStatus[`${newName}-${c}`]=state.rentStatus[`${oldName}-${c}`]||{paid:false,date:''};
-      delete state.rentStatus[`${oldName}-${c}`];
+function saveTenantEdit() {
+  const idx     = parseInt(document.getElementById('et-idx').value);
+  const newName = document.getElementById('et-name').value.trim();
+  const newGen  = document.getElementById('et-gender').value;
+  const newRoom = document.getElementById('et-room').value;
+  if (!newName) { toast('⚠️ Name required','warn'); return; }
+  const t = allTenants()[idx];
+  const oldName = t.name, oldRoom = t.room;
+  // Move tenant
+  const oldR = S.rooms.find(r=>r.name===oldRoom);
+  if (oldR) oldR.tenants = oldR.tenants.filter(n=>n!==oldName);
+  const newR = S.rooms.find(r=>r.name===newRoom);
+  if (newR && !newR.tenants.includes(newName)) newR.tenants.push(newName);
+  delete S.genders[oldName]; S.genders[newName] = newGen;
+  if (newName !== oldName) {
+    [1,2,3].forEach(c => {
+      S.rentStatus[`${newName}-${c}`] = S.rentStatus[`${oldName}-${c}`]||{paid:false,date:''};
+      delete S.rentStatus[`${oldName}-${c}`];
     });
   }
   initRentStatus();
-  closeModal('modal-edittenant');
+  closeModal('m-edittenant');
   renderTenants();
-  toast(`${newName} updated`);
+  toast(`${newName} updated ✓`);
 }
 
-// ══════════════════════════════════════════════════════
+// ────────────────────────────────────────────────────
 // ROOMS
-// ══════════════════════════════════════════════════════
-function renderRooms(){
-  document.getElementById('rooms-grid').innerHTML=state.rooms.map(r=>`
+// ────────────────────────────────────────────────────
+function renderRooms() {
+  document.getElementById('rooms-grid').innerHTML = S.rooms.map(r=>`
     <div class="room-card">
       <div class="room-card-hdr">
-        <div>
-          <div class="room-nm">${r.name}</div>
-          <div class="room-pax">${r.tenants.length} tenants</div>
-        </div>
+        <div><div class="room-nm">${r.name}</div><div class="room-pax">${r.tenants.length} tenants</div></div>
         <span style="font-size:22px">${r.icon}</span>
       </div>
       <div class="room-rate">${r.rate.toFixed(2)}</div>
-      <div class="room-pp">AED/cheque · ${r.tenants.length>0?(r.rate/r.tenants.length).toFixed(2):r.rate.toFixed(2)}/person</div>
+      <div class="room-pp">AED/cheque · ${r.tenants.length>0?(r.rate/r.tenants.length).toFixed(2):'-'}/person</div>
       <div class="room-tenants">${r.tenants.map(t=>`<span class="t-chip">${t}</span>`).join('')}</div>
-    </div>`).join('');
-
-  // Populate edit room rates modal
-  document.getElementById('room-rate-inputs').innerHTML=state.rooms.map((r,i)=>`
-    <div class="form-group">
-      <label class="form-label">${r.icon} ${r.name}</label>
-      <input type="number" class="form-input" id="rr-${i}" value="${r.rate}" step="0.01"
-        placeholder="AED per cheque" style="color:var(--gold);font-family:'Syne',sans-serif;font-weight:700">
     </div>`).join('');
 }
 
-function saveRoomRates(){
-  state.rooms.forEach((r,i)=>{
-    const v=parseFloat(document.getElementById(`rr-${i}`).value)||r.rate;
-    r.rate=v;
-  });
-  initRentStatus();
-  closeModal('modal-editroom');
-  renderRooms();
+function openEditRates() {
+  document.getElementById('room-rate-inputs').innerHTML = S.rooms.map((r,i)=>`
+    <div class="form-group">
+      <label class="form-label">${r.icon} ${r.name}</label>
+      <input type="number" class="form-input" id="rr-${i}" value="${r.rate}" step="0.01" style="color:var(--gold);font-family:'Syne',sans-serif;font-weight:700">
+    </div>`).join('');
+  openModal('m-editrates');
+}
+
+function saveRates() {
+  S.rooms.forEach((r,i)=>{ r.rate = parseFloat(document.getElementById(`rr-${i}`).value)||r.rate; });
+  initRentStatus(); closeModal('m-editrates'); renderRooms();
   toast('Room rates updated ✓');
 }
 
-// ══════════════════════════════════════════════════════
+// ────────────────────────────────────────────────────
 // RENT
-// ══════════════════════════════════════════════════════
-function renderRent(){
+// ────────────────────────────────────────────────────
+function renderRent() {
   initRentStatus();
-  [1,2,3].forEach(c=>{
-    const at=allTenants();
-    document.getElementById(`rtb${c}`).innerHTML=at.map(t=>{
-      const k=`${t.name}-${c}`;
-      const s=state.rentStatus[k]||{paid:false,date:''};
+  [1,2,3].forEach(c => {
+    document.getElementById(`rtb${c}`).innerHTML = allTenants().map(t=>{
+      const k=`${t.name}-${c}`, s=S.rentStatus[k]||{paid:false,date:''};
       return `<tr>
         <td style="font-weight:500">${t.name}</td>
-        <td style="font-size:12px;color:var(--text-dim)">${t.room}</td>
+        <td style="font-size:11.5px;color:var(--text-dim)">${t.room}</td>
         <td style="font-family:'Syne',sans-serif;font-weight:700;color:var(--gold);font-size:13px">${t.share.toFixed(2)}</td>
         <td><span class="pill ${s.paid?'pill-paid':'pill-pending'}">${s.paid?'Paid':'Pending'}</span></td>
         <td style="font-size:11px;color:var(--text-dim)">${s.date||'—'}</td>
@@ -1149,537 +1210,376 @@ function renderRent(){
       </tr>`;
     }).join('');
   });
-  const pending=Object.values(state.rentStatus).filter(s=>!s.paid).length;
-  document.getElementById('nb-rent').textContent=pending;
-  document.getElementById('bb-rent').textContent=pending;
-  document.getElementById('nb-rent').style.display=pending?'':'none';
-  document.getElementById('bb-rent').style.display=pending?'':'none';
+  const pend = Object.values(S.rentStatus).filter(s=>!s.paid).length;
+  const nbr=document.getElementById('nb-rent'), bbr=document.getElementById('bb-rent');
+  nbr.textContent=pend; bbr.textContent=pend;
+  nbr.style.display=pend?'':'none'; bbr.style.display=pend?'':'none';
 }
 
-function toggleRent(name,cheque){
-  const k=`${name}-${cheque}`;
-  const s=state.rentStatus[k];
-  s.paid=!s.paid;
-  s.date=s.paid?new Date().toLocaleDateString():'';
-  renderRent();
-  toast(`${name} Cheque ${cheque}: ${s.paid?'PAID ✓':'Pending'}`);
+function toggleRent(name, c) {
+  const k=`${name}-${c}`, s=S.rentStatus[k];
+  s.paid=!s.paid; s.date=s.paid?new Date().toLocaleDateString():'';
+  renderRent(); toast(`${name} Cheque ${c}: ${s.paid?'PAID':'Pending'}`);
 }
 
-// ══════════════════════════════════════════════════════
+// ────────────────────────────────────────────────────
 // DEWA
-// ══════════════════════════════════════════════════════
-function getDewaKey(mIdx){return `m${mIdx}`}
-function getDewaData(mIdx){
-  const k=getDewaKey(mIdx);
-  if(!state.dewaMonths[k]) state.dewaMonths[k]={bill:0,paid:{},carryover:{}};
-  return state.dewaMonths[k];
+// ────────────────────────────────────────────────────
+function getDewa(m) {
+  if(!S.dewaMonths[m]) S.dewaMonths[m]={bill:0,paid:{},carryover:{}};
+  return S.dewaMonths[m];
 }
 
-function renderDewa(){
-  const mIdx=state.dewaActiveMonth;
-  const data=getDewaData(mIdx);
-  const at=allTenants();
-  const totalPax=at.length;
-  const perHead=data.bill>0?data.bill/totalPax:0;
-
-  document.getElementById('dewa-bill-disp').textContent=data.bill>0?data.bill.toFixed(2):'—';
-  document.getElementById('dewa-ph').textContent=perHead>0?perHead.toFixed(2):'—';
-
-  // Month tabs
-  document.getElementById('dewa-month-tabs').innerHTML=MONTHS.map((m,i)=>`
-    <div class="month-tab ${i===mIdx?'active':''}" onclick="setDewaMonth(${i})">${m}</div>`).join('');
-
-  // Settled count
+function renderDewa() {
+  const m=S.dewaActiveMonth, data=getDewa(m), at=allTenants(), ph=data.bill>0?data.bill/at.length:0;
+  document.getElementById('dw-bill').textContent = data.bill>0?data.bill.toFixed(2):'—';
+  document.getElementById('dw-ph').textContent   = ph>0?ph.toFixed(2):'—';
+  document.getElementById('dewa-month-tabs').innerHTML = MONTHS.map((mn,i)=>`
+    <div class="month-tab ${i===m?'active':''}" onclick="setDewaMonth(${i})">${mn}</div>`).join('');
+  if(document.getElementById('dewa-inp')&&data.bill>0) document.getElementById('dewa-inp').value=data.bill;
   let settled=0;
-  at.forEach(t=>{
-    const co=data.carryover[t.name]||0;
-    const totalDue=perHead+co;
-    const paid=data.paid[t.name]||0;
-    if(totalDue<=0||paid>=totalDue) settled++;
-  });
-  document.getElementById('dewa-paid-count').textContent=settled;
-
-  // Update input
-  const inp=document.getElementById('dewa-input');
-  if(inp&&data.bill>0) inp.value=data.bill;
-
-  // Rows
-  document.getElementById('dewa-body').innerHTML=at.map(t=>{
-    const co=data.carryover[t.name]||0;
-    const totalDue=perHead+co;
-    const paid=data.paid[t.name]||0;
-    const balance=Math.max(0,totalDue-paid);
-    const isSettled=balance<=0.001;
-    const hasCO=co>0.001;
+  at.forEach(t=>{ const co=data.carryover[t.name]||0,td=ph+co,pd=data.paid[t.name]||0; if(td<=0||pd>=td-0.001) settled++; });
+  document.getElementById('dw-settled').textContent=settled;
+  document.getElementById('dewa-body').innerHTML = at.map(t=>{
+    const co=data.carryover[t.name]||0, td=ph+co, pd=data.paid[t.name]||0, bal=Math.max(0,td-pd), ok=bal<=0.001;
     return `<div class="dewa-row">
       <div class="dewa-av">${t.name.slice(0,2).toUpperCase()}</div>
       <div style="flex:1;min-width:0">
-        <div class="dewa-name">${t.name}</div>
-        <div class="dewa-room">${t.room}${hasCO?` · <span class="dewa-co">+${co.toFixed(2)} carry-over</span>`:''}</div>
+        <div style="font-size:13px;font-weight:500">${t.name}</div>
+        <div style="font-size:10.5px;color:var(--text-dim)">${t.room}${co>0.001?` · <span class="dewa-co-tag">+${co.toFixed(2)} carryover</span>`:''}</div>
       </div>
-      <div style="text-align:right;margin-right:10px">
-        <div class="dewa-amt" style="color:var(--teal)">${totalDue.toFixed(2)}</div>
-        <div style="font-size:10px;color:var(--text-dim)">due</div>
+      <div style="text-align:right;margin-right:8px">
+        <div style="font-family:'Syne',sans-serif;font-weight:700;color:var(--teal);font-size:12.5px">${td.toFixed(2)}</div>
+        <div style="font-size:9.5px;color:var(--text-dim)">due</div>
       </div>
-      <div style="text-align:right;margin-right:10px">
-        <input type="number" value="${paid>0?paid.toFixed(2):''}" placeholder="0.00"
-          style="background:rgba(255,255,255,0.04);border:1px solid var(--border);border-radius:8px;
-                 padding:5px 8px;color:var(--green);font-family:'Syne',sans-serif;font-weight:700;
-                 font-size:12px;outline:none;width:72px;text-align:right"
-          onchange="updateDewaPaid('${t.name}',this.value)"
-          onfocus="this.style.borderColor='rgba(74,222,128,0.5)'"
-          onblur="this.style.borderColor='var(--border)'">
-        <div style="font-size:9px;color:var(--text-dim);margin-top:2px">paid</div>
-      </div>
-      <span class="pill ${isSettled?'pill-paid':'pill-pending'}" style="font-size:10px">${isSettled?'Paid':'Pending'}</span>
+      <input type="number" value="${pd>0?pd.toFixed(2):''}" placeholder="0.00"
+        style="background:rgba(255,255,255,0.04);border:1px solid var(--border);border-radius:8px;
+               padding:5px 7px;color:var(--green);font-family:'Syne',sans-serif;font-weight:700;
+               font-size:12px;outline:none;width:68px;text-align:right;margin-right:8px"
+        onchange="updateDewaPaid('${t.name}',this.value)">
+      <span class="pill ${ok?'pill-paid':'pill-pending'}" style="font-size:9.5px">${ok?'Paid':'Pending'}</span>
     </div>`;
   }).join('');
 }
 
-function setDewaMonth(idx){
-  state.dewaActiveMonth=idx;
+function setDewaMonth(i){ S.dewaActiveMonth=i; renderDewa(); }
+function onDewaInput(v){ getDewa(S.dewaActiveMonth).bill=parseFloat(v)||0; renderDewa(); }
+function saveDewa(){ renderDewa(); toast(`DEWA ${MONTHS[S.dewaActiveMonth]} saved`); }
+function updateDewaPaid(name, v) {
+  const m=S.dewaActiveMonth, data=getDewa(m), at=allTenants(), ph=data.bill>0?data.bill/at.length:0;
+  const paid=parseFloat(v)||0; data.paid[name]=paid;
+  const co=data.carryover[name]||0, td=ph+co, bal=td-paid;
+  if(bal>0.001&&m<11){ const nd=getDewa(m+1); nd.carryover[name]=parseFloat(bal.toFixed(2)); }
+  else if(bal<=0.001){ const nd=getDewa(m+1); delete nd.carryover[name]; }
   renderDewa();
 }
 
-function onDewaInput(val){
-  const data=getDewaData(state.dewaActiveMonth);
-  data.bill=parseFloat(val)||0;
-  renderDewa();
-}
-
-function saveDewa(){
-  const inp=document.getElementById('dewa-input');
-  const val=parseFloat(inp.value)||0;
-  const data=getDewaData(state.dewaActiveMonth);
-  data.bill=val;
-  renderDewa();
-  toast(`DEWA ${MONTHS[state.dewaActiveMonth]}: AED ${val.toFixed(2)} saved`);
-}
-
-function updateDewaPaid(name,val){
-  const data=getDewaData(state.dewaActiveMonth);
-  const at=allTenants();
-  const perHead=data.bill>0?data.bill/at.length:0;
-  const paid=parseFloat(val)||0;
-  data.paid[name]=paid;
-  const co=data.carryover[name]||0;
-  const totalDue=perHead+co;
-  const balance=totalDue-paid;
-  // If can't pay this month, carry over to next
-  if(balance>0.001&&state.dewaActiveMonth<11){
-    const nextKey=getDewaKey(state.dewaActiveMonth+1);
-    if(!state.dewaMonths[nextKey]) state.dewaMonths[nextKey]={bill:0,paid:{},carryover:{}};
-    state.dewaMonths[nextKey].carryover[name]=balance;
-  } else if(balance<=0.001){
-    // Clear next month's carryover for this tenant if paid
-    const nextKey=getDewaKey(state.dewaActiveMonth+1);
-    if(state.dewaMonths[nextKey]) delete state.dewaMonths[nextKey].carryover[name];
-  }
-  renderDewa();
-}
-
-// ══════════════════════════════════════════════════════
+// ────────────────────────────────────────────────────
 // EXPENSES
-// ══════════════════════════════════════════════════════
-function expRow(e,showDel=true){
-  const splitTag=e.split==='All Tenants'?'<span class="split-tag s-all">All</span>':
-    e.split==='Boys Only'?'<span class="split-tag s-boys">Boys</span>':
-    e.split==='Custom'?'<span class="split-tag s-custom">Custom</span>':
-    `<span class="split-tag s-room">${e.split}</span>`;
-  const receiptBtn=e.receipt?`<img src="${e.receipt}" class="receipt-thumb" onclick="openLightbox('${e.receipt}')" alt="receipt">`:
-    `<span style="font-size:10px;color:var(--text-dim)">No receipt</span>`;
+// ────────────────────────────────────────────────────
+function canDeleteExp(e) {
+  if (!currentUser) return false;
+  if (currentUser.type === 'admin') return true;
+  return e.loggedBy === currentUser.name;
+}
+
+function expRow(e, showDelBtn=true) {
+  const canDel = canDeleteExp(e);
+  const splitCls = e.split==='All Tenants'?'s-all':e.split==='Boys Only'?'s-boys':e.split==='Girls Only'?'s-girls':e.split==='Custom'?'s-custom':'s-room';
+  const receipt = e.receipt ? `<img src="${e.receipt}" class="receipt-thumb" onclick="openLightbox('${e.receipt}')" alt="receipt">` : '';
+  const byTag = `<span style="font-size:10px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.09);padding:1px 6px;border-radius:10px;color:var(--text-dim)">by ${e.loggedBy||e.paidBy}</span>`;
   return `<div class="exp-item">
-    <div class="exp-emoji ${EXP_CLS[e.cat]||'exp-other'}">${EXP_EMOJI[e.cat]||'📦'}</div>
+    <div class="exp-emoji ${EC[e.cat]||'exp-other'}">${EE[e.cat]||'📦'}</div>
     <div class="exp-info">
       <div class="exp-desc">${e.desc}</div>
-      <div class="exp-meta">${e.date} · by ${e.paidBy}</div>
-      <div style="margin-top:4px;display:flex;align-items:center;gap:6px">${splitTag}${receiptBtn}</div>
+      <div class="exp-meta">${e.date} · paid by ${e.paidBy}</div>
+      <div style="display:flex;flex-wrap:wrap;gap:5px;margin-top:5px">
+        <span class="split-tag ${splitCls}">${e.split}</span>
+        ${byTag}
+        ${receipt}
+      </div>
     </div>
     <div class="exp-right">
       <div class="exp-amt">${e.amt.toFixed(2)}</div>
       <div class="exp-pp">${e.perPerson.toFixed(2)}/pp</div>
-      <span class="pill ${e.status==='Settled'?'pill-paid':'pill-pending'}" style="font-size:10px">${e.status}</span>
+      <span class="pill ${e.status==='Settled'?'pill-paid':'pill-pending'}" style="font-size:9.5px">${e.status}</span>
     </div>
-    ${showDel?`<div class="del-btn" onclick="askDeleteExp(${e.id})" title="Delete">✕</div>`:''}
+    ${showDelBtn && canDel ? `<div class="del-btn always" onclick="askDel(${e.id})" title="Delete">✕</div>` : ''}
   </div>`;
 }
 
-function renderExpenses(){
-  // Populate paidby
-  const at=allTenants();
-  ['ef-paidby','mef-paidby'].forEach(id=>{
-    const el=document.getElementById(id);
-    if(!el) return;
-    el.innerHTML='<option value="">Select...</option>'+at.map(t=>`<option>${t.name}</option>`).join('');
-  });
-  // Set today
-  const today=new Date().toISOString().slice(0,10);
-  ['ef-date','mef-date'].forEach(id=>{const el=document.getElementById(id);if(el&&!el.value)el.value=today;});
-
-  // Build tenant toggle grids
-  buildTenantToggles('tenant-toggle-grid','selectedCustomTenants');
-  buildTenantToggles('m-tenant-grid','mSelectedCustomTenants');
-
-  const el=document.getElementById('exp-list');
-  if(!state.expenses.length){
-    el.innerHTML='<div class="empty"><div class="empty-icon">🧾</div><div class="empty-txt">No expenses yet</div></div>';
-  } else {
-    el.innerHTML=[...state.expenses].reverse().map(e=>expRow(e)).join('');
-  }
-  const total=state.expenses.reduce((s,e)=>s+e.amt,0);
-  document.getElementById('exp-total-lbl').textContent=`AED ${total.toFixed(2)}`;
-
-  // Mobile: stack layout
-  const layout=document.getElementById('exp-layout');
-  if(layout){
-    layout.style.gridTemplateColumns=window.innerWidth<700?'1fr':'1fr 1.2fr';
-  }
+function renderExpenses() {
+  const today = new Date().toISOString().slice(0,10);
+  ['ef-date','mef-date'].forEach(id => { const el=document.getElementById(id); if(el&&!el.value) el.value=today; });
+  buildGrid('custom-grid','ef'); buildGrid('m-custom-grid','mef');
+  const el = document.getElementById('exp-list');
+  const exps = [...S.expenses].reverse();
+  el.innerHTML = exps.length ? exps.map(e=>expRow(e)).join('') : '<div class="empty"><div class="empty-icon">🧾</div><div class="empty-txt">No expenses yet</div></div>';
+  const tot = S.expenses.reduce((s,e)=>s+e.amt,0);
+  document.getElementById('exp-total-lbl').textContent = `AED ${tot.toFixed(2)}`;
+  const layout = document.getElementById('exp-layout');
+  if(layout) layout.style.gridTemplateColumns = window.innerWidth<700?'1fr':'1fr 1.2fr';
 }
 
-function buildTenantToggles(gridId,stateKey){
-  const grid=document.getElementById(gridId);
-  if(!grid) return;
-  const at=allTenants();
-  grid.innerHTML=at.map(t=>`
-    <div class="tenant-toggle ${state[stateKey].includes(t.name)?'selected':''}"
-      onclick="toggleCustomTenant('${t.name}','${stateKey}','${gridId}')">
+function buildGrid(gridId, prefix) {
+  const grid = document.getElementById(gridId); if(!grid) return;
+  const key = prefix === 'ef' ? 'ef' : 'mef';
+  grid.innerHTML = allTenants().map(t=>`
+    <div class="tenant-toggle ${S.customSel[key].includes(t.name)?'selected':''}"
+      onclick="toggleCustom('${t.name}','${key}','${gridId}')">
       ${t.name}
     </div>`).join('');
 }
 
-function toggleCustomTenant(name,stateKey,gridId){
-  const idx=state[stateKey].indexOf(name);
-  if(idx>-1) state[stateKey].splice(idx,1);
-  else state[stateKey].push(name);
-  buildTenantToggles(gridId,stateKey);
-  updateCustomPreview(stateKey);
+function toggleCustom(name, key, gridId) {
+  const idx = S.customSel[key].indexOf(name);
+  if(idx>-1) S.customSel[key].splice(idx,1); else S.customSel[key].push(name);
+  buildGrid(gridId, key); updateCustomPreview(key);
 }
 
-function updateCustomPreview(stateKey){
-  const isMobile=stateKey==='mSelectedCustomTenants';
-  const amt=parseFloat(document.getElementById(isMobile?'mef-amt':'ef-amt').value)||0;
-  const count=state[stateKey].length;
-  const pp=count>0?amt/count:0;
-  const previewId=isMobile?'m-custom-preview':'custom-split-preview';
-  const amtId=isMobile?'mcp-amt':'csp-amt';
-  const whoId=isMobile?'mcp-who':'csp-who';
-  const preview=document.getElementById(previewId);
-  if(preview){
-    preview.style.display=count>0&&amt>0?'block':'none';
-    document.getElementById(amtId).textContent=`AED ${pp.toFixed(2)}`;
-    document.getElementById(whoId).textContent=`${count} selected`;
-  }
+function updateCustomPreview(key) {
+  const isMob = key==='mef';
+  const amt = parseFloat(document.getElementById(`${key}-amt`).value)||0;
+  const count = S.customSel[key].length, pp = count>0?amt/count:0;
+  const prev = document.getElementById(isMob?'m-custom-preview':'custom-preview');
+  if(prev){ prev.style.display=count>0&&amt>0?'block':'none';
+    document.getElementById(isMob?'mcp-amt':'cp-amt').textContent=`AED ${pp.toFixed(2)}`;
+    document.getElementById(isMob?'mcp-who':'cp-who').textContent=`${count} selected`; }
 }
 
-function onSplitChange(){
+function onSplitChange() {
   const v=document.getElementById('ef-split').value;
-  document.getElementById('custom-tenant-picker').style.display=v==='Custom'?'block':'none';
-  document.getElementById('split-preview-box').style.display=v!=='Custom'?'block':'none';
+  document.getElementById('custom-picker').style.display  = v==='Custom'?'block':'none';
+  document.getElementById('split-preview').style.display  = v!=='Custom'?'block':'none';
   onExpAmt();
 }
-
-function onMSplitChange(){
+function onMSplitChange() {
   const v=document.getElementById('mef-split').value;
-  document.getElementById('m-custom-picker').style.display=v==='Custom'?'block':'none';
-  document.getElementById('m-split-preview').style.display=v!=='Custom'?'block':'none';
+  document.getElementById('m-custom-picker').style.display = v==='Custom'?'block':'none';
+  document.getElementById('m-split-preview').style.display = v!=='Custom'?'block':'none';
   onMExpAmt();
 }
-
-function onExpAmt(){
-  const amt=parseFloat(document.getElementById('ef-amt').value)||0;
-  const split=document.getElementById('ef-split').value;
-  if(split==='Custom'){updateCustomPreview('selectedCustomTenants');return;}
-  const pax=getSplitTenants(split,[]).length||1;
-  const pp=amt/pax;
-  const box=document.getElementById('split-preview-box');
-  box.style.display=amt>0?'block':'none';
-  document.getElementById('spl-pp').textContent=`AED ${pp.toFixed(2)}`;
-  document.getElementById('spl-who').textContent=`${pax} pax`;
+function onExpAmt() {
+  const amt=parseFloat(document.getElementById('ef-amt').value)||0, split=document.getElementById('ef-split').value;
+  if(split==='Custom'){updateCustomPreview('ef');return;}
+  const pax=getSplitTenants(split).length||1, pp=amt/pax;
+  document.getElementById('split-preview').style.display=amt>0?'block':'none';
+  document.getElementById('sp-pp').textContent=`AED ${pp.toFixed(2)}`;
+  document.getElementById('sp-who').textContent=`${pax} pax`;
+}
+function onMExpAmt() {
+  const amt=parseFloat(document.getElementById('mef-amt').value)||0, split=document.getElementById('mef-split').value;
+  if(split==='Custom'){updateCustomPreview('mef');return;}
+  const pax=getSplitTenants(split).length||1, pp=amt/pax;
+  document.getElementById('m-split-preview').style.display=amt>0?'block':'none';
+  document.getElementById('msp-pp').textContent=`AED ${pp.toFixed(2)}`;
+  document.getElementById('msp-who').textContent=`${pax} pax`;
 }
 
-function onMExpAmt(){
-  const amt=parseFloat(document.getElementById('mef-amt').value)||0;
-  const split=document.getElementById('mef-split').value;
-  if(split==='Custom'){updateCustomPreview('mSelectedCustomTenants');return;}
-  const pax=getSplitTenants(split,[]).length||1;
-  const pp=amt/pax;
-  const box=document.getElementById('m-split-preview');
-  box.style.display=amt>0?'block':'none';
-  document.getElementById('mspl-pp').textContent=`AED ${pp.toFixed(2)}`;
-  document.getElementById('mspl-who').textContent=`${pax} pax`;
-}
-
-function handleReceiptUpload(input){
+function handleReceipt(input, prefix) {
   if(!input.files[0]) return;
   const reader=new FileReader();
   reader.onload=e=>{
-    state.receiptDataUrl=e.target.result;
-    document.getElementById('receipt-preview-area').innerHTML=`
-      <div class="receipt-preview-wrap" style="margin-top:8px">
-        <img src="${e.target.result}" style="height:60px;border-radius:8px;border:1px solid var(--border);cursor:pointer" onclick="openLightbox('${e.target.result}')" alt="receipt">
-        <div class="receipt-rm" onclick="removeReceipt()">✕</div>
-      </div>`;
-  };
-  reader.readAsDataURL(input.files[0]);
-}
-
-function handleMReceiptUpload(input){
-  if(!input.files[0]) return;
-  const reader=new FileReader();
-  reader.onload=e=>{
-    state.mReceiptDataUrl=e.target.result;
-    document.getElementById('m-receipt-preview').innerHTML=`
-      <div class="receipt-preview-wrap" style="margin-top:8px">
+    S.receiptData[prefix]=e.target.result;
+    const prevId = prefix+'-receipt-preview';
+    document.getElementById(prevId).innerHTML=`
+      <div style="position:relative;display:inline-block;margin-top:8px">
         <img src="${e.target.result}" style="height:56px;border-radius:8px;border:1px solid var(--border);cursor:pointer" onclick="openLightbox('${e.target.result}')" alt="receipt">
-        <div class="receipt-rm" onclick="state.mReceiptDataUrl=null;document.getElementById('m-receipt-preview').innerHTML=''">✕</div>
+        <div class="receipt-rm" onclick="removeReceipt('${prefix}')">✕</div>
       </div>`;
   };
   reader.readAsDataURL(input.files[0]);
 }
 
-function removeReceipt(){
-  state.receiptDataUrl=null;
-  document.getElementById('receipt-preview-area').innerHTML='';
-  document.getElementById('receipt-input').value='';
+function removeReceipt(prefix) {
+  S.receiptData[prefix]=null;
+  document.getElementById(`${prefix}-receipt-preview`).innerHTML='';
+  document.getElementById(`${prefix}-receipt`).value='';
 }
 
-function collectExpData(prefix,customKey){
-  const date=document.getElementById(`${prefix}-date`).value;
-  const desc=document.getElementById(`${prefix}-desc`).value.trim();
-  const cat=document.getElementById(`${prefix}-cat`).value;
-  const amt=parseFloat(document.getElementById(`${prefix}-amt`).value)||0;
-  const paidBy=document.getElementById(`${prefix}-paidby`).value;
-  const split=document.getElementById(`${prefix}-split`).value;
-  const notes=(document.getElementById(`${prefix}-notes`)||{}).value||'';
-  return{date,desc,cat,amt,paidBy,split,notes,
-    custom:split==='Custom'?[...state[customKey]]:[],
-    receipt:prefix==='ef'?state.receiptDataUrl:state.mReceiptDataUrl};
+function collectExpData(prefix) {
+  const key = prefix;
+  return {
+    date:    document.getElementById(`${prefix}-date`).value,
+    desc:    document.getElementById(`${prefix}-desc`).value.trim(),
+    cat:     document.getElementById(`${prefix}-cat`).value,
+    amt:     parseFloat(document.getElementById(`${prefix}-amt`).value)||0,
+    paidBy:  currentUser?.name || '',
+    loggedBy:currentUser?.name || '',
+    split:   document.getElementById(`${prefix}-split`).value,
+    custom:  [...S.customSel[key]],
+    notes:   (document.getElementById(`${prefix}-notes`)||{}).value||'',
+    receipt: S.receiptData[key],
+  };
 }
 
-function validateAndAddExp(d){
-  if(!d.date||!d.desc||!d.amt||!d.paidBy){toast('⚠️ Fill all required fields','warn');return false;}
-  if(d.split==='Custom'&&d.custom.length===0){toast('⚠️ Select at least one tenant','warn');return false;}
-  const tenants=getSplitTenants(d.split,d.custom);
-  const pp=tenants.length>0?d.amt/tenants.length:d.amt;
-  state.expenses.push({id:state.nextExpId++,...d,customTenants:d.custom,perPerson:pp,status:'Pending'});
-  toast(`Expense added: AED ${d.amt.toFixed(2)}`);
+function addExpense(d) {
+  if(!d.date||!d.desc||!d.amt){toast('⚠️ Fill Date, Description & Amount','warn');return false;}
+  if(d.split==='Custom'&&!d.custom.length){toast('⚠️ Select at least one tenant','warn');return false;}
+  const ten=getSplitTenants(d.split,d.custom), pp=ten.length>0?d.amt/ten.length:d.amt;
+  S.expenses.push({id:S.nextId++,...d,perPerson:+pp.toFixed(2),status:'Pending'});
   return true;
 }
 
-function submitExpense(){
-  const d=collectExpData('ef','selectedCustomTenants');
-  if(!validateAndAddExp(d)) return;
-  // Reset form
-  document.getElementById('ef-desc').value='';
-  document.getElementById('ef-amt').value='';
-  document.getElementById('ef-notes').value='';
-  state.receiptDataUrl=null;
-  state.selectedCustomTenants=[];
-  document.getElementById('receipt-preview-area').innerHTML='';
-  document.getElementById('receipt-input').value='';
-  document.getElementById('split-preview-box').style.display='none';
-  document.getElementById('custom-tenant-picker').style.display='none';
+function resetExpForm(prefix) {
+  document.getElementById(`${prefix}-desc`).value='';
+  document.getElementById(`${prefix}-amt`).value='';
+  if(document.getElementById(`${prefix}-notes`)) document.getElementById(`${prefix}-notes`).value='';
+  S.receiptData[prefix]=null;
+  S.customSel[prefix]=[];
+  document.getElementById(`${prefix}-receipt-preview`).innerHTML='';
+  document.getElementById(`${prefix}-receipt`).value='';
+  document.getElementById(prefix==='ef'?'split-preview':'m-split-preview').style.display='none';
+  document.getElementById(prefix==='ef'?'custom-picker':'m-custom-picker').style.display='none';
+}
+
+function submitExp() {
+  const d=collectExpData('ef');
+  if(!addExpense(d)) return;
+  resetExpForm('ef');
   renderExpenses();
+  toast('Expense added ✓');
 }
 
-function submitMobileExpense(){
-  const d=collectExpData('mef','mSelectedCustomTenants');
-  if(!validateAndAddExp(d)) return;
-  document.getElementById('mef-desc').value='';
-  document.getElementById('mef-amt').value='';
-  state.mReceiptDataUrl=null;
-  state.mSelectedCustomTenants=[];
-  document.getElementById('m-receipt-preview').innerHTML='';
-  document.getElementById('m-receipt-input').value='';
-  closeModal('modal-expense');
+function submitMobileExp() {
+  const d=collectExpData('mef');
+  if(!addExpense(d)) return;
+  resetExpForm('mef');
+  closeModal('m-expense');
   if(currentPage==='expenses') renderExpenses();
+  toast('Expense added ✓');
 }
 
-function askDeleteExp(id){
-  state.pendingDelete=id;
-  const e=state.expenses.find(x=>x.id===id);
-  document.getElementById('confirm-msg').textContent=`"${e?e.desc:'This expense'}" will be permanently removed.`;
-  document.getElementById('confirm-overlay').classList.add('open');
+function openExpenseModal() {
+  const today=new Date().toISOString().slice(0,10);
+  const mdate=document.getElementById('mef-date');
+  if(mdate&&!mdate.value) mdate.value=today;
+  buildGrid('m-custom-grid','mef');
+  openModal('m-expense');
 }
 
-function confirmDelete(){
-  if(state.pendingDelete!==null){
-    state.expenses=state.expenses.filter(e=>e.id!==state.pendingDelete);
-    state.pendingDelete=null;
+function askDel(id) {
+  const e=S.expenses.find(x=>x.id===id);
+  if(!e){toast('Not found','warn');return;}
+  if(!canDeleteExp(e)){toast('🔒 You can only delete your own expenses','warn');return;}
+  S.pendingDel=id;
+  document.getElementById('confirm-msg').textContent=`"${e.desc}" (AED ${e.amt.toFixed(2)}) will be permanently removed.`;
+  document.getElementById('confirm-del').classList.add('open');
+}
+
+function confirmDelete() {
+  if(S.pendingDel!=null){
+    S.expenses=S.expenses.filter(e=>e.id!==S.pendingDel);
+    S.pendingDel=null;
     if(currentPage==='expenses') renderExpenses();
     if(currentPage==='dashboard') renderDash();
     toast('Expense deleted');
   }
   closeConfirm();
 }
+function closeConfirm(){ document.getElementById('confirm-del').classList.remove('open'); S.pendingDel=null; }
 
-function closeConfirm(){
-  document.getElementById('confirm-overlay').classList.remove('open');
-  state.pendingDelete=null;
-}
-
-// ══════════════════════════════════════════════════════
+// ────────────────────────────────────────────────────
 // BALANCES
-// ══════════════════════════════════════════════════════
-function renderBalances(){
-  const at=allTenants();
-  document.getElementById('bal-tbody').innerHTML=at.map(t=>{
-    const rentDue=t.share*3;
-    const rentPaid=[1,2,3].filter(c=>state.rentStatus[`${t.name}-${c}`]?.paid).length*t.share;
-    const mIdx=state.dewaActiveMonth;
-    const data=getDewaData(mIdx);
-    const perHead=data.bill>0?data.bill/at.length:0;
-    const co=data.carryover[t.name]||0;
-    const dewaTotal=perHead+co;
-    const expShare=state.expenses.filter(e=>{
-      const ten=getSplitTenants(e.split,e.customTenants||[]);
-      return ten.includes(t.name);
-    }).reduce((s,e)=>s+e.perPerson,0);
-    const balance=rentDue-rentPaid+dewaTotal+expShare;
-    const isSettled=balance<=0;
+// ────────────────────────────────────────────────────
+function renderBalances() {
+  const at=allTenants(), m=S.dewaActiveMonth, data=getDewa(m), ph=data.bill>0?data.bill/at.length:0;
+  document.getElementById('bal-tbody').innerHTML = at.map(t=>{
+    const rd=t.share*3, rp=[1,2,3].filter(c=>S.rentStatus[`${t.name}-${c}`]?.paid).length*t.share;
+    const co=data.carryover[t.name]||0, dw=ph+co;
+    const es=S.expenses.filter(e=>getSplitTenants(e.split,e.custom||[]).includes(t.name)).reduce((s,e)=>s+e.perPerson,0);
+    const bal=rd-rp+dw+es, ok=bal<=0;
     return `<tr>
       <td style="font-weight:500">${t.name}</td>
-      <td style="font-size:12px;color:var(--text-dim)">${t.room}</td>
-      <td style="font-family:'Syne',sans-serif;font-weight:700;color:var(--gold);font-size:12px">${rentDue.toFixed(2)}</td>
-      <td style="font-family:'Syne',sans-serif;font-weight:700;color:var(--green);font-size:12px">${rentPaid.toFixed(2)}</td>
-      <td style="font-family:'Syne',sans-serif;color:var(--teal);font-size:12px">${dewaTotal.toFixed(2)}</td>
-      <td style="font-size:12px;color:var(--text-dim)">${expShare.toFixed(2)}</td>
-      <td style="font-family:'Syne',sans-serif;font-weight:700;font-size:14px;color:${isSettled?'var(--green)':'var(--red)'}">${balance.toFixed(2)}</td>
-      <td><span class="pill ${isSettled?'pill-paid':balance<50?'pill-pending':'pill-overdue'}">${isSettled?'Settled':balance<50?'Minor':'Outstanding'}</span></td>
+      <td style="font-size:11.5px;color:var(--text-dim)">${t.room}</td>
+      <td style="font-family:'Syne',sans-serif;font-weight:700;color:var(--gold);font-size:12px">${rd.toFixed(2)}</td>
+      <td style="font-family:'Syne',sans-serif;font-weight:700;color:var(--green);font-size:12px">${rp.toFixed(2)}</td>
+      <td style="color:var(--teal);font-size:12px">${dw.toFixed(2)}</td>
+      <td style="font-size:12px;color:var(--text-dim)">${es.toFixed(2)}</td>
+      <td style="font-family:'Syne',sans-serif;font-weight:700;font-size:14px;color:${ok?'var(--green)':'var(--red)'}">${bal.toFixed(2)}</td>
+      <td><span class="pill ${ok?'pill-paid':bal<50?'pill-pending':'pill-overdue'}">${ok?'Settled':bal<50?'Minor':'Outstanding'}</span></td>
     </tr>`;
   }).join('');
 }
 
-// ══════════════════════════════════════════════════════
-// ADMIN
-// ══════════════════════════════════════════════════════
-function renderAdmin(){
-  document.getElementById('admin-user-list').innerHTML=state.admins.map((a,i)=>`
+// ────────────────────────────────────────────────────
+// ADMIN PANEL
+// ────────────────────────────────────────────────────
+function renderAdmin() {
+  document.getElementById('admin-user-list').innerHTML = S.admins.map((a,i)=>`
     <div class="adm-row">
       <div class="adm-av">${a.name.slice(0,2).toUpperCase()}</div>
-      <div style="flex:1">
-        <div class="adm-name">${a.name}</div>
-        <div class="adm-role">${a.role}</div>
-      </div>
-      ${i>0?`<button class="btn btn-red btn-sm" onclick="removeAdmin(${i})">Remove</button>`:'<span class="pill pill-paid">Active</span>'}
+      <div style="flex:1"><div class="adm-name">${a.name}</div><div class="adm-role">${a.role}</div></div>
+      ${i>0?`<button class="btn btn-red btn-sm" onclick="removeAdmin(${i})" style="font-size:11px;padding:4px 10px">Remove</button>`:'<span class="pill pill-paid">Active</span>'}
     </div>`).join('');
-  document.getElementById('settings-list').innerHTML=[
-    ['Flat Number','404'],['Total Tenants',allTenants().length],
-    ['Currency','AED'],['DEWA Split','Per Head (÷'+allTenants().length+')'],
-    ['Expense Logging','All Tenants'],['Balance Visibility','Admin Only'],
+  document.getElementById('settings-list').innerHTML = [
+    ['Flat','404'],['Tenants',allTenants().length],['Currency','AED'],
+    ['DEWA Split','Per Head'],['Expenses','All Tenants'],['Balances','Admin Only'],
   ].map(([l,v])=>`<div class="setting-row"><span class="setting-lbl">${l}</span><strong>${v}</strong></div>`).join('');
 }
 
-function removeAdmin(idx){state.admins.splice(idx,1);renderAdmin();toast('Admin removed')}
-
-function confirmAddAdmin(){
+function confirmAddAdmin() {
   const n=document.getElementById('aa-name').value.trim();
   const e=document.getElementById('aa-email').value.trim();
   const r=document.getElementById('aa-role').value;
-  if(!n||!e){toast('⚠️ Fill name and email','warn');return;}
-  state.admins.push({name:`${n}`,role:r});
-  closeModal('modal-addadmin');
-  document.getElementById('aa-name').value='';
-  document.getElementById('aa-email').value='';
+  if(!n||!e){toast('⚠️ Fill name & email','warn');return;}
+  S.admins.push({name:n,role:r,email:e});
+  closeModal('m-addadmin');
+  document.getElementById('aa-name').value=''; document.getElementById('aa-email').value='';
   if(currentPage==='admin') renderAdmin();
   toast(`${n} added as ${r}`);
 }
 
-// ══════════════════════════════════════════════════════
-// UTILS
-// ══════════════════════════════════════════════════════
-function openModal(id){document.getElementById(id).classList.add('open');document.body.style.overflow='hidden'}
-function closeModal(id){document.getElementById(id).classList.remove('open');document.body.style.overflow=''}
+function removeAdmin(i){ S.admins.splice(i,1); renderAdmin(); toast('Admin removed'); }
+function sendReminders(){ closeModal('m-reminder'); toast('📧 Reminders sent'); }
+function exportCSV() {
+  const rows=[['Tenant','Room','Rent Due','Rent Paid','Balance']];
+  allTenants().forEach(t=>{
+    const rd=t.share*3, rp=[1,2,3].filter(c=>S.rentStatus[`${t.name}-${c}`]?.paid).length*t.share;
+    rows.push([t.name,t.room,rd.toFixed(2),rp.toFixed(2),(rd-rp).toFixed(2)]);
+  });
+  const a=document.createElement('a');
+  a.href='data:text/csv;charset=utf-8,'+encodeURIComponent(rows.map(r=>r.join(',')).join('\n'));
+  a.download='Flat404_Balances.csv'; a.click(); toast('📤 CSV exported');
+}
+function genReport() {
+  const at=allTenants();
+  const trd=at.reduce((s,t)=>s+t.share*3,0);
+  const trp=at.reduce((s,t)=>s+[1,2,3].filter(c=>S.rentStatus[`${t.name}-${c}`]?.paid).length*t.share,0);
+  const te=S.expenses.reduce((s,e)=>s+e.amt,0);
+  alert(`📋 Flat 404 Report\n\nRent Due: AED ${trd.toFixed(2)}\nCollected: AED ${trp.toFixed(2)}\nOutstanding: AED ${(trd-trp).toFixed(2)}\n\nExpenses Total: AED ${te.toFixed(2)}`);
+}
 
-// Close on overlay background tap
+// ────────────────────────────────────────────────────
+// UI UTILITIES
+// ────────────────────────────────────────────────────
+function openModal(id){ document.getElementById(id).classList.add('open'); document.body.style.overflow='hidden'; }
+function closeModal(id){ document.getElementById(id).classList.remove('open'); document.body.style.overflow=''; }
 document.querySelectorAll('.overlay').forEach(ov=>{
-  ov.addEventListener('click',e=>{if(e.target===ov){ov.classList.remove('open');document.body.style.overflow=''}});
+  ov.addEventListener('click',e=>{ if(e.target===ov){ov.classList.remove('open');document.body.style.overflow='';} });
 });
-
-function toggleSidebar(){
-  document.getElementById('sidebar').classList.toggle('open');
-  document.getElementById('sb-overlay').classList.toggle('open');
-}
-function closeSidebar(){
-  document.getElementById('sidebar').classList.remove('open');
-  document.getElementById('sb-overlay').classList.remove('open');
-}
-
-function bnActive(el){
-  document.querySelectorAll('.bn-item').forEach(b=>b.classList.remove('active'));
-  el.classList.add('active');
-}
-
+function openLightbox(src){ document.getElementById('lb-img').src=src; document.getElementById('lightbox').classList.add('open'); }
+function closeLightbox(){ document.getElementById('lightbox').classList.remove('open'); }
+function toggleSidebar(){ document.getElementById('sidebar').classList.toggle('open'); document.getElementById('sb-overlay').classList.toggle('open'); }
+function closeSidebar(){ document.getElementById('sidebar').classList.remove('open'); document.getElementById('sb-overlay').classList.remove('open'); }
+function bnActive(el){ document.querySelectorAll('.bn-item').forEach(b=>b.classList.remove('active')); el.classList.add('active'); }
 function switchTab(page,tabId,el){
-  const prefix=page+'-';
   document.querySelectorAll(`#page-${page} .tab`).forEach(t=>t.classList.remove('active'));
   document.querySelectorAll(`#page-${page} .tab-content`).forEach(t=>t.classList.remove('active'));
-  el.classList.add('active');
-  document.getElementById(prefix+tabId).classList.add('active');
+  el.classList.add('active'); document.getElementById(`${page}-${tabId}`).classList.add('active');
 }
-
-function scrollToExpForm(){
-  const fc=document.getElementById('exp-form-card');
-  if(fc) fc.scrollIntoView({behavior:'smooth'});
-}
-
-function openLightbox(src){
-  document.getElementById('lb-img').src=src;
-  document.getElementById('lightbox').classList.add('open');
-}
-function closeLightbox(){document.getElementById('lightbox').classList.remove('open')}
-
 let toastT;
 function toast(msg,type='success'){
   const el=document.getElementById('toast');
   el.textContent=(type==='warn'?'⚠️ ':'✅ ')+msg;
   el.style.borderColor=type==='warn'?'var(--gold)':'var(--green)';
   el.style.color=type==='warn'?'var(--gold)':'var(--green)';
-  el.classList.add('show');
-  clearTimeout(toastT);
+  el.classList.add('show'); clearTimeout(toastT);
   toastT=setTimeout(()=>el.classList.remove('show'),3000);
 }
-
-function sendReminders(){closeModal('modal-reminder');toast('📧 Reminders sent to all tenants')}
-
-function exportCSV(){
-  const at=allTenants();
-  const rows=[['Tenant','Room','Rent Due','Rent Paid','Balance']];
-  at.forEach(t=>{
-    const rd=t.share*3;
-    const rp=[1,2,3].filter(c=>state.rentStatus[`${t.name}-${c}`]?.paid).length*t.share;
-    rows.push([t.name,t.room,rd.toFixed(2),rp.toFixed(2),(rd-rp).toFixed(2)]);
-  });
-  const csv=rows.map(r=>r.join(',')).join('\n');
-  const a=document.createElement('a');
-  a.href='data:text/csv;charset=utf-8,'+encodeURIComponent(csv);
-  a.download='Flat404_Balances.csv';a.click();
-  toast('📤 CSV exported');
-}
-
-function genReport(){
-  const at=allTenants();
-  const trd=at.reduce((s,t)=>s+t.share*3,0);
-  const trp=at.reduce((s,t)=>s+[1,2,3].filter(c=>state.rentStatus[`${t.name}-${c}`]?.paid).length*t.share,0);
-  const te=state.expenses.reduce((s,e)=>s+e.amt,0);
-  alert(`📋 Flat 404 Monthly Report\n\nRent Due: AED ${trd.toFixed(2)}\nCollected: AED ${trp.toFixed(2)}\nOutstanding: AED ${(trd-trp).toFixed(2)}\n\nTotal Expenses Logged: AED ${te.toFixed(2)}\nDEWA ${MONTHS[state.dewaActiveMonth]}: AED ${getDewaData(state.dewaActiveMonth).bill.toFixed(2)}`);
-}
-
-// ══════════════════════════════════════════════════════
-// RESPONSIVE WATCH
-// ══════════════════════════════════════════════════════
 window.addEventListener('resize',()=>{
   if(currentPage==='dashboard') renderDash();
-  if(currentPage==='expenses') renderExpenses();
-});
-
-// ══════════════════════════════════════════════════════
-// INIT
-// ══════════════════════════════════════════════════════
-window.addEventListener('DOMContentLoaded',()=>{
-  renderDash();
-  // Init DEWA month to current
-  state.dewaActiveMonth=new Date().getMonth();
+  if(currentPage==='expenses')  renderExpenses();
 });
 </script>
 </body>
