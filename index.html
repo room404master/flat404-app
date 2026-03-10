@@ -1,0 +1,1555 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Flat 404 — Tenant Hub</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg:        #080c14;
+  --surface:   #0d1420;
+  --glass:     rgba(255,255,255,0.035);
+  --glass-b:   rgba(255,255,255,0.08);
+  --border:    rgba(255,255,255,0.07);
+  --border-h:  rgba(255,255,255,0.14);
+  --gold:      #d4a843;
+  --gold-dim:  rgba(212,168,67,0.15);
+  --teal:      #3dd9c6;
+  --teal-dim:  rgba(61,217,198,0.12);
+  --red:       #f05a5a;
+  --red-dim:   rgba(240,90,90,0.12);
+  --green:     #4ade80;
+  --green-dim: rgba(74,222,128,0.12);
+  --muted:     rgba(255,255,255,0.35);
+  --text:      rgba(255,255,255,0.88);
+  --text-dim:  rgba(255,255,255,0.55);
+  --sidebar-w: 260px;
+}
+
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+
+html{scroll-behavior:smooth}
+
+body {
+  font-family:'DM Sans',sans-serif;
+  background:var(--bg);
+  color:var(--text);
+  min-height:100vh;
+  overflow-x:hidden;
+}
+
+/* ── NOISE GRAIN OVERLAY ── */
+body::before {
+  content:'';
+  position:fixed;inset:0;
+  background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+  pointer-events:none;z-index:9999;opacity:.5;
+}
+
+/* ── AMBIENT GLOWS ── */
+.glow-1,.glow-2,.glow-3 {
+  position:fixed;border-radius:50%;filter:blur(120px);
+  pointer-events:none;z-index:0;
+}
+.glow-1{width:600px;height:600px;background:rgba(212,168,67,0.06);top:-200px;left:-100px}
+.glow-2{width:500px;height:500px;background:rgba(61,217,198,0.05);bottom:-100px;right:-50px}
+.glow-3{width:400px;height:400px;background:rgba(100,80,200,0.04);top:40%;left:40%}
+
+/* ── LAYOUT ── */
+.app {
+  display:flex;
+  min-height:100vh;
+  position:relative;z-index:1;
+}
+
+/* ── SIDEBAR ── */
+.sidebar {
+  width:var(--sidebar-w);
+  min-height:100vh;
+  background:linear-gradient(180deg,rgba(255,255,255,0.04) 0%,rgba(255,255,255,0.02) 100%);
+  border-right:1px solid var(--border);
+  display:flex;flex-direction:column;
+  position:fixed;left:0;top:0;bottom:0;
+  backdrop-filter:blur(20px);
+  z-index:100;
+  transition:transform .3s cubic-bezier(.4,0,.2,1);
+}
+.sidebar-logo {
+  padding:28px 24px 20px;
+  border-bottom:1px solid var(--border);
+}
+.logo-badge {
+  display:inline-flex;align-items:center;gap:10px;
+}
+.logo-icon {
+  width:38px;height:38px;
+  background:linear-gradient(135deg,var(--gold),#b8860b);
+  border-radius:10px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:18px;
+  box-shadow:0 4px 20px rgba(212,168,67,0.3);
+}
+.logo-text {
+  font-family:'Syne',sans-serif;
+  font-size:20px;font-weight:800;
+  letter-spacing:-.5px;
+}
+.logo-sub {
+  font-size:10px;color:var(--text-dim);
+  letter-spacing:2px;text-transform:uppercase;
+  margin-top:1px;
+}
+.sidebar-user {
+  margin:16px 12px;
+  padding:12px;
+  background:var(--gold-dim);
+  border:1px solid rgba(212,168,67,0.2);
+  border-radius:12px;
+  display:flex;align-items:center;gap:10px;
+}
+.user-avatar {
+  width:36px;height:36px;border-radius:50%;
+  background:linear-gradient(135deg,var(--gold),#8b6914);
+  display:flex;align-items:center;justify-content:center;
+  font-size:14px;font-weight:700;
+  font-family:'Syne',sans-serif;
+  flex-shrink:0;
+}
+.user-name{font-size:13px;font-weight:600}
+.user-role{font-size:10px;color:var(--gold);text-transform:uppercase;letter-spacing:1px}
+
+.sidebar-nav {
+  flex:1;padding:8px 12px;
+  display:flex;flex-direction:column;gap:2px;
+}
+.nav-section-label {
+  font-size:9px;color:var(--text-dim);text-transform:uppercase;
+  letter-spacing:2px;padding:14px 8px 6px;
+  font-family:'Syne',sans-serif;
+}
+.nav-item {
+  display:flex;align-items:center;gap:10px;
+  padding:10px 12px;border-radius:10px;
+  cursor:pointer;transition:all .2s;
+  border:1px solid transparent;
+  font-size:13.5px;font-weight:500;color:var(--text-dim);
+  position:relative;
+}
+.nav-item:hover {
+  background:var(--glass);border-color:var(--border);
+  color:var(--text);
+}
+.nav-item.active {
+  background:var(--glass-b);border-color:var(--border-h);
+  color:var(--text);
+}
+.nav-item.active::before {
+  content:'';position:absolute;left:-12px;top:50%;
+  transform:translateY(-50%);
+  width:3px;height:60%;border-radius:0 2px 2px 0;
+  background:var(--gold);
+}
+.nav-icon{font-size:16px;width:20px;text-align:center}
+.nav-badge {
+  margin-left:auto;
+  background:var(--red);color:white;
+  font-size:10px;font-weight:700;
+  padding:2px 7px;border-radius:20px;
+  font-family:'Syne',sans-serif;
+}
+
+.sidebar-footer {
+  padding:16px 12px;border-top:1px solid var(--border);
+}
+.admin-chip {
+  display:flex;align-items:center;gap:8px;
+  padding:10px 12px;border-radius:10px;
+  background:linear-gradient(135deg,rgba(212,168,67,0.1),rgba(212,168,67,0.05));
+  border:1px solid rgba(212,168,67,0.2);
+  font-size:12px;font-weight:500;color:var(--gold);
+  cursor:pointer;transition:all .2s;
+}
+.admin-chip:hover{background:rgba(212,168,67,0.15)}
+
+/* ── MAIN CONTENT ── */
+.main {
+  margin-left:var(--sidebar-w);
+  flex:1;
+  min-height:100vh;
+  display:flex;flex-direction:column;
+}
+
+.topbar {
+  position:sticky;top:0;z-index:50;
+  padding:16px 32px;
+  background:rgba(8,12,20,0.8);
+  backdrop-filter:blur(20px);
+  border-bottom:1px solid var(--border);
+  display:flex;align-items:center;justify-content:space-between;
+}
+.page-title {
+  font-family:'Syne',sans-serif;
+  font-size:22px;font-weight:700;
+  letter-spacing:-.5px;
+}
+.topbar-actions{display:flex;align-items:center;gap:10px}
+.btn {
+  display:inline-flex;align-items:center;gap:7px;
+  padding:8px 16px;border-radius:9px;
+  font-size:13px;font-weight:500;
+  cursor:pointer;transition:all .2s;border:none;
+  font-family:'DM Sans',sans-serif;
+}
+.btn-ghost {
+  background:var(--glass);color:var(--text);
+  border:1px solid var(--border);
+}
+.btn-ghost:hover{background:var(--glass-b);border-color:var(--border-h)}
+.btn-gold {
+  background:linear-gradient(135deg,var(--gold),#b8860b);
+  color:#0a0800;font-weight:600;
+  box-shadow:0 4px 16px rgba(212,168,67,0.25);
+}
+.btn-gold:hover{transform:translateY(-1px);box-shadow:0 6px 20px rgba(212,168,67,0.35)}
+
+/* ── CONTENT PAGES ── */
+.page{display:none;padding:32px;animation:fadeUp .4s ease both}
+.page.active{display:block}
+
+@keyframes fadeUp{
+  from{opacity:0;transform:translateY(16px)}
+  to{opacity:1;transform:translateY(0)}
+}
+
+/* ── STAT CARDS ── */
+.stats-grid {
+  display:grid;grid-template-columns:repeat(4,1fr);gap:16px;
+  margin-bottom:28px;
+}
+.stat-card {
+  background:var(--glass);
+  border:1px solid var(--border);
+  border-radius:16px;padding:22px;
+  position:relative;overflow:hidden;
+  transition:all .25s;cursor:default;
+}
+.stat-card::before {
+  content:'';position:absolute;top:0;left:0;right:0;height:1px;
+  background:linear-gradient(90deg,transparent,var(--border-h),transparent);
+}
+.stat-card:hover{
+  background:var(--glass-b);border-color:var(--border-h);
+  transform:translateY(-2px);
+  box-shadow:0 8px 32px rgba(0,0,0,0.3);
+}
+.stat-icon{font-size:22px;margin-bottom:12px}
+.stat-value {
+  font-family:'Syne',sans-serif;
+  font-size:26px;font-weight:700;letter-spacing:-.5px;
+}
+.stat-label{font-size:12px;color:var(--text-dim);margin-top:4px}
+.stat-change {
+  font-size:11px;margin-top:8px;
+  display:inline-flex;align-items:center;gap:4px;
+  padding:2px 8px;border-radius:20px;
+}
+.stat-up{background:var(--green-dim);color:var(--green)}
+.stat-warn{background:var(--gold-dim);color:var(--gold)}
+.stat-down{background:var(--red-dim);color:var(--red)}
+.stat-card.gold .stat-value{color:var(--gold)}
+.stat-card.teal .stat-value{color:var(--teal)}
+.stat-card.red  .stat-value{color:var(--red)}
+.stat-card.green .stat-value{color:var(--green)}
+
+/* ── SECTION CARDS ── */
+.card {
+  background:var(--glass);
+  border:1px solid var(--border);
+  border-radius:20px;
+  overflow:hidden;
+  margin-bottom:20px;
+  position:relative;
+}
+.card::before {
+  content:'';position:absolute;top:0;left:0;right:0;height:1px;
+  background:linear-gradient(90deg,transparent,var(--border-h),transparent);
+}
+.card-header {
+  padding:20px 24px 16px;
+  display:flex;align-items:center;justify-content:space-between;
+  border-bottom:1px solid var(--border);
+}
+.card-title {
+  font-family:'Syne',sans-serif;
+  font-size:15px;font-weight:700;letter-spacing:-.2px;
+  display:flex;align-items:center;gap:8px;
+}
+.card-body{padding:0}
+
+/* ── TABLES ── */
+.table-wrap{overflow-x:auto}
+table{width:100%;border-collapse:collapse}
+th {
+  font-family:'Syne',sans-serif;
+  font-size:10px;font-weight:700;letter-spacing:1.5px;
+  text-transform:uppercase;color:var(--text-dim);
+  padding:12px 20px;text-align:left;
+  background:rgba(255,255,255,0.02);
+  border-bottom:1px solid var(--border);
+}
+td {
+  padding:13px 20px;font-size:13.5px;
+  border-bottom:1px solid rgba(255,255,255,0.04);
+  transition:background .15s;
+}
+tr:last-child td{border-bottom:none}
+tr:hover td{background:rgba(255,255,255,0.025)}
+.td-name{font-weight:500}
+.td-room{font-size:12px;color:var(--text-dim)}
+.td-amount{
+  font-family:'Syne',sans-serif;font-weight:600;
+  font-size:14px;
+}
+.td-amount.due{color:var(--gold)}
+.td-amount.paid{color:var(--green)}
+.td-amount.balance{color:var(--red)}
+
+/* ── STATUS PILLS ── */
+.pill {
+  display:inline-flex;align-items:center;gap:5px;
+  padding:3px 10px;border-radius:20px;font-size:11px;font-weight:600;
+  letter-spacing:.3px;font-family:'Syne',sans-serif;
+}
+.pill::before{content:'';width:5px;height:5px;border-radius:50%}
+.pill-pending{background:rgba(212,168,67,0.12);color:var(--gold)}
+.pill-pending::before{background:var(--gold)}
+.pill-paid{background:rgba(74,222,128,0.1);color:var(--green)}
+.pill-paid::before{background:var(--green)}
+.pill-overdue{background:rgba(240,90,90,0.1);color:var(--red)}
+.pill-overdue::before{background:var(--red)}
+
+/* ── CHEQUE TIMELINE ── */
+.cheque-row {
+  display:flex;align-items:center;
+  padding:18px 24px;
+  border-bottom:1px solid rgba(255,255,255,0.04);
+  gap:20px;
+  transition:background .15s;
+}
+.cheque-row:last-child{border-bottom:none}
+.cheque-row:hover{background:rgba(255,255,255,0.02)}
+.cheque-num {
+  width:32px;height:32px;border-radius:50%;
+  background:var(--glass-b);border:1px solid var(--border-h);
+  display:flex;align-items:center;justify-content:center;
+  font-family:'Syne',sans-serif;font-size:12px;font-weight:700;
+  flex-shrink:0;color:var(--gold);
+}
+.cheque-date{font-size:14px;font-weight:500;flex:1}
+.cheque-sub{font-size:11px;color:var(--text-dim);margin-top:2px}
+.cheque-amount {
+  font-family:'Syne',sans-serif;font-size:18px;font-weight:700;
+  color:var(--gold);
+}
+
+/* ── PROGRESS BAR ── */
+.progress-wrap{margin-top:6px}
+.progress-label{display:flex;justify-content:space-between;font-size:11px;color:var(--text-dim);margin-bottom:6px}
+.progress-track{height:4px;background:rgba(255,255,255,0.07);border-radius:4px;overflow:hidden}
+.progress-fill{height:100%;border-radius:4px;transition:width .8s cubic-bezier(.4,0,.2,1)}
+.fill-gold{background:linear-gradient(90deg,var(--gold),#f0c040)}
+.fill-teal{background:linear-gradient(90deg,var(--teal),#7eecdf)}
+.fill-red{background:linear-gradient(90deg,var(--red),#f08080)}
+
+/* ── ROOM CARDS GRID ── */
+.rooms-grid {
+  display:grid;grid-template-columns:repeat(3,1fr);
+  gap:16px;padding:20px;
+}
+.room-card {
+  background:rgba(255,255,255,0.025);
+  border:1px solid var(--border);
+  border-radius:14px;padding:18px;
+  transition:all .25s;cursor:default;
+}
+.room-card:hover{
+  background:var(--glass-b);border-color:var(--border-h);
+  transform:translateY(-2px);box-shadow:0 6px 24px rgba(0,0,0,.25);
+}
+.room-card-header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:14px}
+.room-name{font-family:'Syne',sans-serif;font-size:14px;font-weight:700}
+.room-pax{font-size:11px;color:var(--text-dim);margin-top:2px}
+.room-icon{font-size:24px}
+.room-rate {
+  font-family:'Syne',sans-serif;font-size:20px;font-weight:700;color:var(--gold);
+}
+.room-rate-label{font-size:10px;color:var(--text-dim);margin-top:2px}
+.room-tenants{
+  display:flex;flex-wrap:wrap;gap:5px;margin-top:14px;
+}
+.tenant-chip {
+  font-size:11px;padding:3px 9px;border-radius:20px;
+  background:rgba(255,255,255,0.06);
+  border:1px solid rgba(255,255,255,0.09);
+  color:var(--text-dim);
+}
+
+/* ── EXPENSE FORM ── */
+.expense-form{padding:24px}
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.form-group{display:flex;flex-direction:column;gap:6px}
+.form-group.full{grid-column:1/-1}
+label.form-label{font-size:11px;font-weight:600;color:var(--text-dim);text-transform:uppercase;letter-spacing:1px}
+input.form-input,select.form-input,textarea.form-input {
+  background:rgba(255,255,255,0.05);
+  border:1px solid var(--border);
+  border-radius:10px;padding:10px 14px;
+  color:var(--text);font-size:13.5px;
+  font-family:'DM Sans',sans-serif;
+  outline:none;transition:all .2s;
+  appearance:none;-webkit-appearance:none;
+}
+input.form-input:focus,select.form-input:focus,textarea.form-input:focus {
+  border-color:rgba(212,168,67,0.5);
+  background:rgba(212,168,67,0.04);
+  box-shadow:0 0 0 3px rgba(212,168,67,0.08);
+}
+textarea.form-input{resize:vertical;min-height:80px}
+select.form-input option{background:#0d1420}
+
+/* ── EXPENSE LIST ── */
+.expense-item {
+  display:flex;align-items:center;gap:16px;
+  padding:16px 24px;
+  border-bottom:1px solid rgba(255,255,255,0.04);
+  transition:background .15s;
+}
+.expense-item:last-child{border-bottom:none}
+.expense-item:hover{background:rgba(255,255,255,0.02)}
+.expense-emoji{
+  width:40px;height:40px;border-radius:12px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:18px;flex-shrink:0;
+}
+.exp-gas{background:rgba(61,217,198,.1)}
+.exp-food{background:rgba(212,168,67,.1)}
+.exp-clean{background:rgba(74,222,128,.1)}
+.exp-fun{background:rgba(240,90,90,.1)}
+.exp-other{background:rgba(255,255,255,.05)}
+.expense-info{flex:1}
+.expense-desc{font-size:14px;font-weight:500}
+.expense-meta{font-size:11px;color:var(--text-dim);margin-top:3px}
+.expense-split {
+  font-size:10px;padding:2px 8px;border-radius:20px;
+  font-family:'Syne',sans-serif;font-weight:600;
+}
+.split-all{background:var(--teal-dim);color:var(--teal)}
+.split-boys{background:rgba(100,120,240,0.12);color:#a0aaff}
+.split-room{background:var(--gold-dim);color:var(--gold)}
+
+/* ── DEWA TABLE ── */
+.dewa-month-input {
+  background:transparent;border:none;outline:none;
+  color:var(--gold);font-family:'Syne',sans-serif;
+  font-weight:700;font-size:14px;text-align:right;
+  width:90px;cursor:pointer;
+}
+.dewa-month-input:focus{
+  background:rgba(212,168,67,0.08);border-radius:6px;padding:2px 6px;
+}
+
+/* ── TABS ── */
+.tabs{display:flex;gap:4px;padding:16px 24px 0}
+.tab {
+  padding:8px 16px;border-radius:8px 8px 0 0;
+  font-size:12.5px;font-weight:600;cursor:pointer;
+  color:var(--text-dim);transition:all .2s;
+  border-bottom:2px solid transparent;
+  font-family:'Syne',sans-serif;
+}
+.tab.active{color:var(--gold);border-bottom-color:var(--gold)}
+.tab-content{display:none}
+.tab-content.active{display:block}
+
+/* ── MODAL ── */
+.modal-overlay {
+  position:fixed;inset:0;background:rgba(0,0,0,0.7);
+  backdrop-filter:blur(8px);z-index:200;
+  display:none;align-items:center;justify-content:center;
+  animation:fadeIn .2s ease;
+}
+.modal-overlay.open{display:flex}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+.modal {
+  background:#0d1420;border:1px solid var(--border-h);
+  border-radius:20px;padding:28px;width:480px;max-width:90vw;
+  animation:slideUp .3s cubic-bezier(.4,0,.2,1);
+  position:relative;
+}
+@keyframes slideUp{from{transform:translateY(20px);opacity:0}to{transform:translateY(0);opacity:1}}
+.modal-title {
+  font-family:'Syne',sans-serif;font-size:18px;font-weight:700;
+  margin-bottom:20px;
+}
+.modal-close {
+  position:absolute;top:20px;right:20px;
+  width:28px;height:28px;border-radius:50%;
+  background:var(--glass);border:1px solid var(--border);
+  display:flex;align-items:center;justify-content:center;
+  cursor:pointer;font-size:14px;color:var(--text-dim);
+  transition:all .2s;
+}
+.modal-close:hover{background:var(--glass-b);color:var(--text)}
+
+/* ── TOAST ── */
+.toast {
+  position:fixed;bottom:24px;right:24px;z-index:300;
+  background:#0d1420;border:1px solid var(--green);
+  border-radius:12px;padding:14px 20px;
+  display:flex;align-items:center;gap:10px;
+  font-size:13px;color:var(--green);
+  box-shadow:0 8px 32px rgba(0,0,0,.4);
+  transform:translateY(80px);opacity:0;
+  transition:all .35s cubic-bezier(.4,0,.2,1);
+}
+.toast.show{transform:translateY(0);opacity:1}
+
+/* ── HAMBURGER ── */
+.hamburger{display:none;flex-direction:column;gap:5px;cursor:pointer;padding:8px}
+.hamburger span{width:22px;height:2px;background:var(--text);border-radius:2px;transition:all .3s}
+
+/* ── SCROLLBAR ── */
+::-webkit-scrollbar{width:4px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:rgba(255,255,255,0.1);border-radius:4px}
+
+/* ── DIVIDER ── */
+.divider{height:1px;background:var(--border);margin:0}
+
+/* ── EMPTY STATE ── */
+.empty{
+  padding:48px;text-align:center;color:var(--text-dim);
+}
+.empty-icon{font-size:36px;margin-bottom:12px}
+.empty-text{font-size:14px}
+
+/* ── ADMIN PANEL ── */
+.admin-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;padding:20px}
+.admin-block{
+  background:rgba(255,255,255,0.025);border:1px solid var(--border);
+  border-radius:14px;padding:18px;
+}
+.admin-block-title{
+  font-family:'Syne',sans-serif;font-size:13px;font-weight:700;
+  margin-bottom:12px;color:var(--text-dim);text-transform:uppercase;letter-spacing:1px;
+}
+.admin-user-row{
+  display:flex;align-items:center;gap:10px;
+  padding:8px 0;border-bottom:1px solid rgba(255,255,255,0.04);
+}
+.admin-user-row:last-child{border-bottom:none}
+.aur-avatar{
+  width:30px;height:30px;border-radius:50%;
+  background:linear-gradient(135deg,var(--gold),#8b6914);
+  display:flex;align-items:center;justify-content:center;
+  font-size:11px;font-weight:700;flex-shrink:0;color:#000;
+}
+.aur-name{font-size:13px;font-weight:500;flex:1}
+.aur-role{font-size:10px;color:var(--gold);text-transform:uppercase;letter-spacing:.5px}
+
+/* ── RESPONSIVE ── */
+@media(max-width:900px){
+  .stats-grid{grid-template-columns:1fr 1fr}
+  .rooms-grid{grid-template-columns:1fr 1fr}
+}
+@media(max-width:768px){
+  .sidebar{transform:translateX(-100%)}
+  .sidebar.open{transform:translateX(0)}
+  .main{margin-left:0}
+  .hamburger{display:flex}
+  .topbar{padding:12px 20px}
+  .page{padding:20px}
+  .stats-grid{grid-template-columns:1fr 1fr;gap:10px}
+  .rooms-grid{grid-template-columns:1fr}
+  .form-grid{grid-template-columns:1fr}
+  .admin-grid{grid-template-columns:1fr}
+}
+@media(max-width:480px){
+  .stats-grid{grid-template-columns:1fr}
+}
+
+/* ── RENT PAYMENT STATUS ── */
+.pay-btn{
+  font-size:11px;padding:5px 12px;border-radius:7px;cursor:pointer;
+  font-family:'Syne',sans-serif;font-weight:600;border:none;
+  transition:all .2s;
+}
+.pay-btn-mark{background:var(--green-dim);color:var(--green);border:1px solid rgba(74,222,128,0.2)}
+.pay-btn-mark:hover{background:rgba(74,222,128,0.2)}
+.pay-btn-unmark{background:var(--red-dim);color:var(--red);border:1px solid rgba(240,90,90,0.2);font-size:10px}
+
+.view-overlay{position:fixed;inset:0;background:rgba(8,12,20,0.9);z-index:150;display:none;align-items:center;justify-content:center}
+.view-overlay.open{display:flex}
+</style>
+</head>
+<body>
+
+<div class="glow-1"></div>
+<div class="glow-2"></div>
+<div class="glow-3"></div>
+
+<div class="app">
+
+<!-- ── SIDEBAR ─────────────────────────────────────────────────────── -->
+<aside class="sidebar" id="sidebar">
+  <div class="sidebar-logo">
+    <div class="logo-badge">
+      <div class="logo-icon">🏠</div>
+      <div>
+        <div class="logo-text">Flat 404</div>
+        <div class="logo-sub">Tenant Hub</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="sidebar-user">
+    <div class="user-avatar">AD</div>
+    <div>
+      <div class="user-name">Admin / Landlord</div>
+      <div class="user-role">⚡ Super Admin</div>
+    </div>
+  </div>
+
+  <nav class="sidebar-nav">
+    <div class="nav-section-label">Main</div>
+    <div class="nav-item active" onclick="navigate('dashboard',this)">
+      <span class="nav-icon">📊</span>Dashboard
+    </div>
+    <div class="nav-item" onclick="navigate('tenants',this)">
+      <span class="nav-icon">👥</span>Tenants
+    </div>
+    <div class="nav-item" onclick="navigate('rooms',this)">
+      <span class="nav-icon">🚪</span>Rooms
+    </div>
+
+    <div class="nav-section-label">Finance</div>
+    <div class="nav-item" onclick="navigate('rent',this)">
+      <span class="nav-icon">💰</span>Rent Payments
+      <span class="nav-badge" id="pending-badge">3</span>
+    </div>
+    <div class="nav-item" onclick="navigate('dewa',this)">
+      <span class="nav-icon">⚡</span>DEWA
+    </div>
+    <div class="nav-item" onclick="navigate('expenses',this)">
+      <span class="nav-icon">🧾</span>Expenses
+    </div>
+    <div class="nav-item" onclick="navigate('balances',this)">
+      <span class="nav-icon">📋</span>Balances
+    </div>
+
+    <div class="nav-section-label">Admin</div>
+    <div class="nav-item" onclick="navigate('admin',this)">
+      <span class="nav-icon">⚙️</span>Admin Panel
+    </div>
+  </nav>
+
+  <div class="sidebar-footer">
+    <div class="admin-chip" onclick="openAddAdmin()">
+      <span>➕</span> Add Admin
+    </div>
+  </div>
+</aside>
+
+<!-- ── MAIN ────────────────────────────────────────────────────────── -->
+<div class="main">
+
+  <!-- TOPBAR -->
+  <div class="topbar">
+    <div style="display:flex;align-items:center;gap:14px">
+      <div class="hamburger" onclick="toggleSidebar()">
+        <span></span><span></span><span></span>
+      </div>
+      <div class="page-title" id="page-title">Dashboard</div>
+    </div>
+    <div class="topbar-actions">
+      <button class="btn btn-ghost" onclick="navigate('expenses',document.querySelector('.nav-item:nth-child(8))'))">➕ Log Expense</button>
+      <button class="btn btn-gold" onclick="openModal('reminder-modal')">📧 Send Reminders</button>
+    </div>
+  </div>
+
+  <!-- ══ PAGE: DASHBOARD ══ -->
+  <div class="page active" id="page-dashboard">
+
+    <div class="stats-grid">
+      <div class="stat-card gold">
+        <div class="stat-icon">🏠</div>
+        <div class="stat-value">57,166</div>
+        <div class="stat-label">Total Annual Rent (AED)</div>
+        <div class="stat-change stat-warn">3 cheques × 19,000</div>
+      </div>
+      <div class="stat-card teal">
+        <div class="stat-icon">👥</div>
+        <div class="stat-value">18</div>
+        <div class="stat-label">Total Tenants</div>
+        <div class="stat-change stat-up">↑ Across 6 rooms</div>
+      </div>
+      <div class="stat-card red">
+        <div class="stat-icon">⏳</div>
+        <div class="stat-value" id="outstanding-count">3</div>
+        <div class="stat-label">Pending Cheques</div>
+        <div class="stat-change stat-warn">Next: Apr 10, 2026</div>
+      </div>
+      <div class="stat-card green">
+        <div class="stat-icon">✅</div>
+        <div class="stat-value">0</div>
+        <div class="stat-label">Settled This Month</div>
+        <div class="stat-change stat-up">Check balances</div>
+      </div>
+    </div>
+
+    <div style="display:grid;grid-template-columns:1.4fr 1fr;gap:20px">
+
+      <!-- Cheque Schedule -->
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">📅 Cheque Schedule</div>
+          <span class="pill pill-warn" style="background:var(--gold-dim);color:var(--gold)">AED 19,000 each</span>
+        </div>
+        <div class="card-body">
+          <div class="cheque-row">
+            <div class="cheque-num">1</div>
+            <div>
+              <div class="cheque-date">April 10, 2026</div>
+              <div class="cheque-sub">Q1 Rent Payment</div>
+              <div style="margin-top:10px">
+                <div class="progress-wrap">
+                  <div class="progress-label"><span>Collected</span><span id="c1-pct">0%</span></div>
+                  <div class="progress-track"><div class="progress-fill fill-gold" id="c1-bar" style="width:0%"></div></div>
+                </div>
+              </div>
+            </div>
+            <div style="text-align:right">
+              <div class="cheque-amount">19,000</div>
+              <div class="pill pill-pending" style="margin-top:6px">Upcoming</div>
+            </div>
+          </div>
+          <div class="cheque-row">
+            <div class="cheque-num">2</div>
+            <div style="flex:1">
+              <div class="cheque-date">June 10, 2026</div>
+              <div class="cheque-sub">Q2 Rent Payment</div>
+            </div>
+            <div style="text-align:right">
+              <div class="cheque-amount">19,000</div>
+              <div class="pill pill-pending" style="margin-top:6px">Upcoming</div>
+            </div>
+          </div>
+          <div class="cheque-row">
+            <div class="cheque-num">3</div>
+            <div style="flex:1">
+              <div class="cheque-date">August 10, 2026</div>
+              <div class="cheque-sub">Q3 Rent Payment</div>
+            </div>
+            <div style="text-align:right">
+              <div class="cheque-amount">19,000</div>
+              <div class="pill pill-pending" style="margin-top:6px">Upcoming</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Quick Summary -->
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">🏡 Room Overview</div>
+        </div>
+        <div class="card-body">
+          <div id="room-overview-list"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Recent Expenses -->
+    <div class="card" style="margin-top:20px">
+      <div class="card-header">
+        <div class="card-title">🧾 Recent Shared Expenses</div>
+        <button class="btn btn-ghost" onclick="navigate('expenses',null)" style="font-size:12px;padding:6px 12px">View All</button>
+      </div>
+      <div class="card-body" id="dashboard-expenses"></div>
+    </div>
+
+  </div>
+
+  <!-- ══ PAGE: TENANTS ══ -->
+  <div class="page" id="page-tenants">
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title">👥 All Tenants</div>
+        <span style="font-size:12px;color:var(--text-dim)">18 residents · Flat 404</span>
+      </div>
+      <div class="card-body table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>#</th><th>Name</th><th>Room / Partition</th>
+              <th>Rent Share / cheque</th><th>Status</th><th>Type</th>
+            </tr>
+          </thead>
+          <tbody id="tenants-table"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ PAGE: ROOMS ══ -->
+  <div class="page" id="page-rooms">
+    <div class="card" style="margin-bottom:0">
+      <div class="card-header">
+        <div class="card-title">🚪 Rooms & Partitions</div>
+        <span style="font-size:12px;color:var(--text-dim)">6 units · Tenant-facing view</span>
+      </div>
+    </div>
+    <div class="rooms-grid" id="rooms-grid"></div>
+  </div>
+
+  <!-- ══ PAGE: RENT PAYMENTS ══ -->
+  <div class="page" id="page-rent">
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title">💰 Rent Payment Tracker</div>
+      </div>
+      <div class="tabs">
+        <div class="tab active" onclick="switchTab('rent','cheque1',this)">Cheque 1 – Apr</div>
+        <div class="tab" onclick="switchTab('rent','cheque2',this)">Cheque 2 – Jun</div>
+        <div class="tab" onclick="switchTab('rent','cheque3',this)">Cheque 3 – Aug</div>
+      </div>
+      <div style="padding:4px 0">
+        <div class="tab-content active" id="rent-cheque1">
+          <div class="table-wrap"><table>
+            <thead><tr><th>Tenant</th><th>Room</th><th>Share (AED)</th><th>Status</th><th>Date Paid</th><th>Action</th></tr></thead>
+            <tbody id="rent-table-1"></tbody>
+          </table></div>
+        </div>
+        <div class="tab-content" id="rent-cheque2">
+          <div class="table-wrap"><table>
+            <thead><tr><th>Tenant</th><th>Room</th><th>Share (AED)</th><th>Status</th><th>Date Paid</th><th>Action</th></tr></thead>
+            <tbody id="rent-table-2"></tbody>
+          </table></div>
+        </div>
+        <div class="tab-content" id="rent-cheque3">
+          <div class="table-wrap"><table>
+            <thead><tr><th>Tenant</th><th>Room</th><th>Share (AED)</th><th>Status</th><th>Date Paid</th><th>Action</th></tr></thead>
+            <tbody id="rent-table-3"></tbody>
+          </table></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ PAGE: DEWA ══ -->
+  <div class="page" id="page-dewa">
+    <div class="stats-grid" style="grid-template-columns:repeat(3,1fr)">
+      <div class="stat-card gold">
+        <div class="stat-icon">⚡</div>
+        <div class="stat-value" id="dewa-total-display">—</div>
+        <div class="stat-label">This Month's DEWA Bill</div>
+      </div>
+      <div class="stat-card teal">
+        <div class="stat-icon">👤</div>
+        <div class="stat-value" id="dewa-per-head">—</div>
+        <div class="stat-label">Per Person (÷18)</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon">📅</div>
+        <div class="stat-value">18</div>
+        <div class="stat-label">Pax Split</div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title">⚡ Monthly DEWA Bill Entry</div>
+        <div style="display:flex;align-items:center;gap:10px">
+          <input type="number" id="dewa-bill-input" placeholder="Enter AED amount"
+            style="background:rgba(255,255,255,0.05);border:1px solid var(--border);border-radius:9px;
+                   padding:8px 14px;color:var(--gold);font-family:'Syne',sans-serif;font-weight:700;
+                   font-size:14px;outline:none;width:180px"
+            oninput="updateDEWA(this.value)">
+          <button class="btn btn-gold" onclick="saveDEWA()">Save</button>
+        </div>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Tenant</th><th>Room</th><th>This Month (AED)</th><th>Paid</th><th>Balance</th><th>Status</th></tr></thead>
+          <tbody id="dewa-table"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ PAGE: EXPENSES ══ -->
+  <div class="page" id="page-expenses">
+    <div style="display:grid;grid-template-columns:1fr 1.2fr;gap:20px;align-items:start">
+
+      <!-- Log Form -->
+      <div class="card" style="margin-bottom:0">
+        <div class="card-header">
+          <div class="card-title">➕ Log Shared Expense</div>
+        </div>
+        <div class="expense-form">
+          <div class="form-grid">
+            <div class="form-group">
+              <label class="form-label">Date</label>
+              <input type="date" class="form-input" id="exp-date">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Category</label>
+              <select class="form-input" id="exp-cat">
+                <option value="Gas">⛽ Gas</option>
+                <option value="Consumables">🧴 Consumables</option>
+                <option value="Cleaning">🧹 Cleaning</option>
+                <option value="Entertainment">🎉 Entertainment</option>
+                <option value="Maintenance">🔧 Maintenance</option>
+                <option value="Food">🍜 Food</option>
+                <option value="Other">📦 Other</option>
+              </select>
+            </div>
+            <div class="form-group full">
+              <label class="form-label">Description</label>
+              <input type="text" class="form-input" id="exp-desc" placeholder="e.g. Gas refill, Toilet rolls x12">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Amount (AED)</label>
+              <input type="number" class="form-input" id="exp-amt" placeholder="0.00" step="0.01">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Paid By</label>
+              <select class="form-input" id="exp-paidby">
+                <option value="">Select tenant...</option>
+              </select>
+            </div>
+            <div class="form-group full">
+              <label class="form-label">Split Among</label>
+              <select class="form-input" id="exp-split" onchange="updateSplitPreview()">
+                <option value="All Tenants">All Tenants (18 pax)</option>
+                <option value="Boys Only">Boys Only (11 pax)</option>
+                <option value="Girls Only">Girls Only (7 pax)</option>
+                <option value="Masters Bedroom">Masters Bedroom (5 pax)</option>
+                <option value="Kids Room">Kids Room (4 pax)</option>
+                <option value="Maids Room">Maids Room (2 pax)</option>
+                <option value="Room 1">Room 1 (3 pax)</option>
+                <option value="Partition 1">Partition 1 (2 pax)</option>
+                <option value="Partition 2">Partition 2 (3 pax)</option>
+              </select>
+            </div>
+            <div class="form-group full" id="split-preview" style="display:none">
+              <div style="background:var(--teal-dim);border:1px solid rgba(61,217,198,0.15);border-radius:10px;padding:10px 14px;font-size:13px;color:var(--teal)">
+                Per person: <strong id="per-person-amt">AED 0.00</strong> · <span id="split-who"></span>
+              </div>
+            </div>
+            <div class="form-group full">
+              <label class="form-label">Notes</label>
+              <textarea class="form-input" id="exp-notes" placeholder="Optional notes..."></textarea>
+            </div>
+          </div>
+          <button class="btn btn-gold" style="width:100%;margin-top:16px;justify-content:center;padding:12px" onclick="submitExpense()">
+            ➕ Add Expense
+          </button>
+        </div>
+      </div>
+
+      <!-- Expense List -->
+      <div class="card" style="margin-bottom:0">
+        <div class="card-header">
+          <div class="card-title">🧾 Expense Log</div>
+          <span style="font-size:12px;color:var(--text-dim)" id="expense-total-label">Total: AED 0</span>
+        </div>
+        <div id="expense-list"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ PAGE: BALANCES ══ -->
+  <div class="page" id="page-balances">
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title">📋 Individual Balances — Admin View</div>
+        <span class="pill pill-pending" style="font-size:10px">🔒 Admin Only</span>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr>
+            <th>Tenant</th><th>Room</th>
+            <th>Rent Due</th><th>Rent Paid</th>
+            <th>DEWA</th><th>Expenses</th>
+            <th>Total Balance</th><th>Status</th>
+          </tr></thead>
+          <tbody id="balances-table"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ PAGE: ADMIN ══ -->
+  <div class="page" id="page-admin">
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title">⚙️ Admin Panel</div>
+        <span class="pill" style="background:var(--gold-dim);color:var(--gold)">⚡ Super Admin Mode</span>
+      </div>
+      <div class="admin-grid">
+        <div class="admin-block">
+          <div class="admin-block-title">Admin Users</div>
+          <div id="admin-users-list">
+            <div class="admin-user-row">
+              <div class="aur-avatar">AD</div>
+              <div style="flex:1">
+                <div class="aur-name">You (Landlord)</div>
+                <div class="aur-role">Super Admin</div>
+              </div>
+              <span class="pill pill-paid">Active</span>
+            </div>
+          </div>
+          <button class="btn btn-ghost" style="width:100%;margin-top:14px;justify-content:center" onclick="openAddAdmin()">
+            ➕ Add Admin
+          </button>
+        </div>
+        <div class="admin-block">
+          <div class="admin-block-title">Settings</div>
+          <div style="display:flex;flex-direction:column;gap:10px">
+            <div style="display:flex;justify-content:space-between;align-items:center;font-size:13px">
+              <span style="color:var(--text-dim)">Flat Number</span><strong>404</strong>
+            </div>
+            <div style="display:flex;justify-content:space-between;align-items:center;font-size:13px">
+              <span style="color:var(--text-dim)">Total Tenants</span><strong>18</strong>
+            </div>
+            <div style="display:flex;justify-content:space-between;align-items:center;font-size:13px">
+              <span style="color:var(--text-dim)">Currency</span><strong style="color:var(--gold)">AED</strong>
+            </div>
+            <div style="display:flex;justify-content:space-between;align-items:center;font-size:13px">
+              <span style="color:var(--text-dim)">DEWA Split</span><strong>Per Head (÷18)</strong>
+            </div>
+            <div style="display:flex;justify-content:space-between;align-items:center;font-size:13px">
+              <span style="color:var(--text-dim)">Expense Logging</span><strong>All Tenants</strong>
+            </div>
+            <div style="display:flex;justify-content:space-between;align-items:center;font-size:13px">
+              <span style="color:var(--text-dim)">Balance Visibility</span><strong>Room Level</strong>
+            </div>
+          </div>
+        </div>
+        <div class="admin-block" style="grid-column:1/-1">
+          <div class="admin-block-title">Quick Actions</div>
+          <div style="display:flex;gap:10px;flex-wrap:wrap">
+            <button class="btn btn-gold" onclick="openModal('reminder-modal')">📧 Send Reminders</button>
+            <button class="btn btn-ghost" onclick="exportData()">📤 Export CSV</button>
+            <button class="btn btn-ghost" onclick="generateReport()">📋 Monthly Report</button>
+            <button class="btn btn-ghost" style="color:var(--red);border-color:rgba(240,90,90,0.2)" onclick="showAlert('Backup feature requires Google Sheets deployment')">💾 Backup</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div><!-- /.main -->
+</div><!-- /.app -->
+
+<!-- ── MODALS ─────────────────────────────────────────────────────── -->
+
+<!-- Add Admin Modal -->
+<div class="modal-overlay" id="add-admin-modal">
+  <div class="modal">
+    <div class="modal-close" onclick="closeModal('add-admin-modal')">✕</div>
+    <div class="modal-title">➕ Add New Admin</div>
+    <div class="form-group">
+      <label class="form-label">Name</label>
+      <input type="text" class="form-input" id="new-admin-name" placeholder="Admin's name">
+    </div>
+    <div class="form-group" style="margin-top:12px">
+      <label class="form-label">Email</label>
+      <input type="email" class="form-input" id="new-admin-email" placeholder="admin@email.com">
+    </div>
+    <div class="form-group" style="margin-top:12px">
+      <label class="form-label">Role</label>
+      <select class="form-input" id="new-admin-role">
+        <option>Admin</option>
+        <option>Super Admin</option>
+      </select>
+    </div>
+    <div style="display:flex;gap:10px;margin-top:20px">
+      <button class="btn btn-ghost" style="flex:1;justify-content:center" onclick="closeModal('add-admin-modal')">Cancel</button>
+      <button class="btn btn-gold" style="flex:1;justify-content:center" onclick="confirmAddAdmin()">Add Admin</button>
+    </div>
+  </div>
+</div>
+
+<!-- Reminder Modal -->
+<div class="modal-overlay" id="reminder-modal">
+  <div class="modal">
+    <div class="modal-close" onclick="closeModal('reminder-modal')">✕</div>
+    <div class="modal-title">📧 Send Payment Reminders</div>
+    <p style="font-size:13.5px;color:var(--text-dim);margin-bottom:20px">
+      This will send reminders to all tenants with outstanding balances. In Google Sheets deployment, this triggers real email via Gmail.
+    </p>
+    <div style="background:var(--gold-dim);border:1px solid rgba(212,168,67,0.2);border-radius:12px;padding:14px;margin-bottom:20px">
+      <div style="font-size:12px;color:var(--gold);font-family:'Syne',sans-serif;font-weight:700;margin-bottom:8px">REMINDER PREVIEW</div>
+      <div style="font-size:13px;color:var(--text-dim)">
+        Subject: [Flat 404] Payment Reminder<br>
+        To: All tenants with pending balance<br>
+        Next cheque: April 10, 2026 — AED 19,000
+      </div>
+    </div>
+    <div style="display:flex;gap:10px">
+      <button class="btn btn-ghost" style="flex:1;justify-content:center" onclick="closeModal('reminder-modal')">Cancel</button>
+      <button class="btn btn-gold" style="flex:1;justify-content:center" onclick="sendReminders()">📧 Send Now</button>
+    </div>
+  </div>
+</div>
+
+<!-- Toast -->
+<div class="toast" id="toast">✅ Action completed</div>
+
+<script>
+// ══════════════════════════════════════════════════════════════════
+// DATA
+// ══════════════════════════════════════════════════════════════════
+
+const ROOMS = [
+  { name:"Masters Bedroom", icon:"🛏️", rate:4479.06, tenants:["Gerry","Cheng","Abegail","Clint","Amit"] },
+  { name:"Kids Room",       icon:"🧒", rate:3566.05, tenants:["Raymond","Arrah","Kids"] },
+  { name:"Maids Room",      icon:"🪣", rate:2163.44, tenants:["Charwin","Dev"] },
+  { name:"Room 1",          icon:"🚪", rate:4479.06, tenants:["Elden","Lyka","Sandra"] },
+  { name:"Partition 1",     icon:"🪟", rate:2239.53, tenants:["Niko","Niña"] },
+  { name:"Partition 2",     icon:"🪟", rate:2239.53, tenants:["Eric","Jessa","Francis"] },
+];
+
+const BOYS  = ["Gerry","Cheng","Clint","Amit","Raymond","Charwin","Dev","Elden","Eric","Francis","Niko"];
+const GIRLS = ["Abegail","Arrah","Kids","Lyka","Sandra","Niña","Jessa"];
+
+const SPLIT_PAX = {
+  "All Tenants":18,"Boys Only":11,"Girls Only":7,
+  "Masters Bedroom":5,"Kids Room":3,"Maids Room":2,"Room 1":3,"Partition 1":2,"Partition 2":3
+};
+
+// Build flat tenant list
+const TENANTS = [];
+ROOMS.forEach(r => r.tenants.forEach(t => TENANTS.push({name:t, room:r.name, share:r.rate/r.tenants.length})));
+
+// State
+let state = {
+  rentStatus: {},  // tenant+cheque -> {paid:bool, date:''}
+  dewaMonthly: 0,
+  dewaPaid: {},    // tenantName -> amount paid
+  expenses: [
+    {id:1,date:"2026-03-01",desc:"Gas refill",cat:"Gas",amt:85,paidBy:"Charwin",split:"All Tenants",perPerson:85/18,status:"Pending"},
+    {id:2,date:"2026-03-05",desc:"Toilet rolls x12",cat:"Consumables",amt:42,paidBy:"Arrah",split:"All Tenants",perPerson:42/18,status:"Pending"},
+    {id:3,date:"2026-03-07",desc:"Alcoholic drinks",cat:"Entertainment",amt:220,paidBy:"Gerry",split:"Boys Only",perPerson:220/11,status:"Pending"},
+    {id:4,date:"2026-03-08",desc:"Cleaning supplies",cat:"Consumables",amt:60,paidBy:"Lyka",split:"All Tenants",perPerson:60/18,status:"Settled"},
+  ],
+  admins: [{name:"You (Landlord)", role:"Super Admin"}],
+  nextExpId: 5,
+};
+
+// Initialize rent status
+TENANTS.forEach(t => {
+  [1,2,3].forEach(c => { state.rentStatus[`${t.name}-${c}`] = {paid:false,date:''}; });
+});
+
+// ══════════════════════════════════════════════════════════════════
+// NAVIGATION
+// ══════════════════════════════════════════════════════════════════
+const pageTitles = {
+  dashboard:"Dashboard", tenants:"Tenants", rooms:"Rooms & Partitions",
+  rent:"Rent Payments", dewa:"DEWA", expenses:"Shared Expenses",
+  balances:"Balance Sheet", admin:"Admin Panel"
+};
+
+function navigate(id, navEl) {
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
+  document.getElementById('page-'+id).classList.add('active');
+  if(navEl) navEl.classList.add('active');
+  else {
+    document.querySelectorAll('.nav-item').forEach(n=>{
+      if(n.getAttribute('onclick')&&n.getAttribute('onclick').includes(`'${id}'`))n.classList.add('active');
+    });
+  }
+  document.getElementById('page-title').textContent = pageTitles[id]||id;
+  renderPage(id);
+  // Close sidebar on mobile
+  if(window.innerWidth<=768) document.getElementById('sidebar').classList.remove('open');
+}
+
+function renderPage(id) {
+  if(id==='dashboard') renderDashboard();
+  if(id==='tenants')   renderTenants();
+  if(id==='rooms')     renderRooms();
+  if(id==='rent')      renderRent();
+  if(id==='dewa')      renderDewa();
+  if(id==='expenses')  renderExpenses();
+  if(id==='balances')  renderBalances();
+  if(id==='admin')     renderAdmin();
+}
+
+// ══════════════════════════════════════════════════════════════════
+// RENDER FUNCTIONS
+// ══════════════════════════════════════════════════════════════════
+
+function renderDashboard() {
+  // Room overview mini
+  const ol = document.getElementById('room-overview-list');
+  ol.innerHTML = ROOMS.map(r=>`
+    <div style="display:flex;align-items:center;gap:12px;padding:13px 20px;border-bottom:1px solid rgba(255,255,255,0.04)">
+      <span style="font-size:18px">${r.icon}</span>
+      <div style="flex:1">
+        <div style="font-size:13px;font-weight:500">${r.name}</div>
+        <div style="font-size:11px;color:var(--text-dim)">${r.tenants.length} pax</div>
+      </div>
+      <div style="text-align:right">
+        <div style="font-family:'Syne',sans-serif;font-weight:700;color:var(--gold);font-size:14px">${r.rate.toFixed(0)}</div>
+        <div style="font-size:10px;color:var(--text-dim)">AED/cheque</div>
+      </div>
+    </div>
+  `).join('');
+
+  // Recent expenses
+  const de = document.getElementById('dashboard-expenses');
+  const recent = state.expenses.slice(-3).reverse();
+  if(!recent.length){de.innerHTML='<div class="empty"><div class="empty-icon">🧾</div><div class="empty-text">No expenses logged yet</div></div>';return;}
+  de.innerHTML = recent.map(e=>expenseRow(e)).join('');
+}
+
+function renderTenants() {
+  const tb = document.getElementById('tenants-table');
+  tb.innerHTML = TENANTS.map((t,i)=>{
+    const isBoy = BOYS.includes(t.name);
+    return `<tr>
+      <td style="color:var(--text-dim);font-size:12px">${i+1}</td>
+      <td class="td-name">${t.name}</td>
+      <td class="td-room">${t.room}</td>
+      <td class="td-amount due">${t.share.toFixed(2)}</td>
+      <td><span class="pill pill-paid">Active</span></td>
+      <td><span class="pill" style="background:${isBoy?'rgba(100,120,240,0.1)':'rgba(240,100,160,0.1)'};color:${isBoy?'#a0aaff':'#f0a0c0'}">${isBoy?'Male':'Female'}</span></td>
+    </tr>`;
+  }).join('');
+}
+
+function renderRooms() {
+  const grid = document.getElementById('rooms-grid');
+  grid.innerHTML = ROOMS.map(r=>`
+    <div class="room-card">
+      <div class="room-card-header">
+        <div>
+          <div class="room-name">${r.name}</div>
+          <div class="room-pax">${r.tenants.length} tenants</div>
+        </div>
+        <span class="room-icon">${r.icon}</span>
+      </div>
+      <div class="room-rate">${r.rate.toFixed(2)}</div>
+      <div class="room-rate-label">AED per cheque · ${(r.rate/r.tenants.length).toFixed(2)} per person</div>
+      <div class="room-tenants">
+        ${r.tenants.map(t=>`<span class="tenant-chip">${t}</span>`).join('')}
+      </div>
+    </div>
+  `).join('');
+}
+
+function renderRent() {
+  [1,2,3].forEach(c=>{
+    const tb = document.getElementById(`rent-table-${c}`);
+    tb.innerHTML = TENANTS.map(t=>{
+      const key = `${t.name}-${c}`;
+      const s = state.rentStatus[key];
+      return `<tr>
+        <td class="td-name">${t.name}</td>
+        <td class="td-room">${t.room}</td>
+        <td class="td-amount due">${t.share.toFixed(2)}</td>
+        <td><span class="pill ${s.paid?'pill-paid':'pill-pending'}">${s.paid?'Paid':'Pending'}</span></td>
+        <td style="font-size:12px;color:var(--text-dim)">${s.date||'—'}</td>
+        <td>
+          <button class="pay-btn ${s.paid?'pay-btn-unmark':'pay-btn-mark'}" onclick="toggleRent('${t.name}',${c})">
+            ${s.paid?'✕ Unmark':'✓ Mark Paid'}
+          </button>
+        </td>
+      </tr>`;
+    }).join('');
+  });
+  updatePendingBadge();
+}
+
+function toggleRent(name, cheque) {
+  const key = `${name}-${cheque}`;
+  state.rentStatus[key].paid = !state.rentStatus[key].paid;
+  state.rentStatus[key].date = state.rentStatus[key].paid ? new Date().toLocaleDateString() : '';
+  renderRent();
+  updatePendingBadge();
+  showToast(`${name} Cheque ${cheque} marked as ${state.rentStatus[key].paid?'PAID':'PENDING'}`);
+}
+
+function updatePendingBadge() {
+  const pending = Object.values(state.rentStatus).filter(s=>!s.paid).length;
+  const badge = document.getElementById('pending-badge');
+  badge.textContent = pending;
+  badge.style.display = pending?'':'none';
+}
+
+function renderDewa() {
+  const bill = state.dewaMonthly;
+  document.getElementById('dewa-total-display').textContent = bill?bill.toFixed(2)+'':'—';
+  document.getElementById('dewa-per-head').textContent = bill?(bill/18).toFixed(2)+'':'—';
+  const tb = document.getElementById('dewa-table');
+  tb.innerHTML = TENANTS.map(t=>{
+    const perHead = bill/18 || 0;
+    const paid = state.dewaPaid[t.name]||0;
+    const bal = perHead - paid;
+    return `<tr>
+      <td class="td-name">${t.name}</td>
+      <td class="td-room">${t.room}</td>
+      <td class="td-amount" style="color:var(--teal)">${perHead.toFixed(2)}</td>
+      <td>
+        <input type="number" value="${paid.toFixed(2)}" step="0.01" min="0"
+          style="background:rgba(255,255,255,0.05);border:1px solid var(--border);border-radius:8px;
+                 padding:5px 10px;color:var(--green);font-family:'Syne',sans-serif;font-weight:600;
+                 font-size:13px;outline:none;width:90px"
+          onchange="updateDewaPaid('${t.name}',this.value)">
+      </td>
+      <td class="td-amount ${bal>0?'balance':'paid'}">${bal.toFixed(2)}</td>
+      <td><span class="pill ${bal<=0?'pill-paid':'pill-pending'}">${bal<=0?'Settled':'Pending'}</span></td>
+    </tr>`;
+  }).join('');
+}
+
+function updateDEWA(val) {
+  state.dewaMonthly = parseFloat(val)||0;
+  renderDewa();
+}
+function saveDEWA() {
+  showToast(`DEWA bill saved: AED ${state.dewaMonthly.toFixed(2)} — AED ${(state.dewaMonthly/18).toFixed(2)} per person`);
+}
+function updateDewaPaid(name, val) {
+  state.dewaPaid[name] = parseFloat(val)||0;
+  renderDewa();
+}
+
+const expEmoji = {Gas:'⛽',Consumables:'🧴',Cleaning:'🧹',Entertainment:'🎉',Maintenance:'🔧',Food:'🍜',Other:'📦'};
+const expClass = {Gas:'exp-gas',Consumables:'exp-other',Cleaning:'exp-clean',Entertainment:'exp-fun',Maintenance:'exp-other',Food:'exp-food',Other:'exp-other'};
+
+function expenseRow(e) {
+  const splitClass = e.split==='All Tenants'?'split-all':e.split==='Boys Only'?'split-boys':'split-room';
+  return `<div class="expense-item">
+    <div class="expense-emoji ${expClass[e.cat]||'exp-other'}">${expEmoji[e.cat]||'📦'}</div>
+    <div class="expense-info">
+      <div class="expense-desc">${e.desc}</div>
+      <div class="expense-meta">${e.date} · Paid by ${e.paidBy}</div>
+    </div>
+    <span class="expense-split ${splitClass}">${e.split}</span>
+    <div style="text-align:right">
+      <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:15px;color:var(--gold)">${e.amt.toFixed(2)}</div>
+      <div style="font-size:10px;color:var(--text-dim)">${e.perPerson.toFixed(2)}/pp</div>
+    </div>
+    <span class="pill ${e.status==='Settled'?'pill-paid':'pill-pending'}" style="font-size:10px">${e.status}</span>
+  </div>`;
+}
+
+function renderExpenses() {
+  // Populate paidby dropdown
+  const pb = document.getElementById('exp-paidby');
+  pb.innerHTML = '<option value="">Select tenant...</option>' +
+    TENANTS.map(t=>`<option>${t.name}</option>`).join('');
+  // Set today's date
+  const di = document.getElementById('exp-date');
+  if(!di.value) di.value = new Date().toISOString().slice(0,10);
+
+  const el = document.getElementById('expense-list');
+  if(!state.expenses.length){
+    el.innerHTML='<div class="empty"><div class="empty-icon">🧾</div><div class="empty-text">No expenses yet</div></div>';
+    return;
+  }
+  el.innerHTML = [...state.expenses].reverse().map(expenseRow).join('');
+  const total = state.expenses.reduce((s,e)=>s+e.amt,0);
+  document.getElementById('expense-total-label').textContent = `Total: AED ${total.toFixed(2)}`;
+}
+
+function updateSplitPreview() {
+  const split = document.getElementById('exp-split').value;
+  const amt = parseFloat(document.getElementById('exp-amt').value)||0;
+  const pax = SPLIT_PAX[split]||18;
+  const pp = amt/pax;
+  const preview = document.getElementById('split-preview');
+  if(amt>0){
+    preview.style.display='block';
+    document.getElementById('per-person-amt').textContent = `AED ${pp.toFixed(2)}`;
+    document.getElementById('split-who').textContent = `${pax} persons`;
+  } else {
+    preview.style.display='none';
+  }
+}
+
+function submitExpense() {
+  const date  = document.getElementById('exp-date').value;
+  const desc  = document.getElementById('exp-desc').value.trim();
+  const cat   = document.getElementById('exp-cat').value;
+  const amt   = parseFloat(document.getElementById('exp-amt').value)||0;
+  const pb    = document.getElementById('exp-paidby').value;
+  const split = document.getElementById('exp-split').value;
+  const notes = document.getElementById('exp-notes').value;
+  if(!date||!desc||!amt||!pb){showToast('⚠️ Please fill all required fields','warn');return;}
+  const pax = SPLIT_PAX[split]||18;
+  state.expenses.push({id:state.nextExpId++,date,desc,cat,amt,paidBy:pb,split,perPerson:amt/pax,status:'Pending',notes});
+  document.getElementById('exp-desc').value='';
+  document.getElementById('exp-amt').value='';
+  document.getElementById('exp-notes').value='';
+  document.getElementById('split-preview').style.display='none';
+  renderExpenses();
+  showToast(`Expense logged: AED ${amt.toFixed(2)} (${split})`);
+}
+
+function renderBalances() {
+  const tb = document.getElementById('balances-table');
+  tb.innerHTML = TENANTS.map(t=>{
+    const rentDue = t.share * 3;
+    const rentPaid = [1,2,3].filter(c=>state.rentStatus[`${t.name}-${c}`]?.paid).length * t.share;
+    const dewaShare = (state.dewaMonthly/18)||0;
+    const expShare = state.expenses
+      .filter(e=>{
+        if(e.split==='All Tenants') return true;
+        if(e.split==='Boys Only') return BOYS.includes(t.name);
+        if(e.split==='Girls Only') return GIRLS.includes(t.name);
+        const room = ROOMS.find(r=>r.name===e.split);
+        return room && room.tenants.includes(t.name);
+      })
+      .reduce((s,e)=>s+e.perPerson,0);
+    const total = rentDue - rentPaid + dewaShare + expShare;
+    const isSettled = total <= 0;
+    return `<tr>
+      <td class="td-name">${t.name}</td>
+      <td class="td-room">${t.room}</td>
+      <td class="td-amount due">${rentDue.toFixed(2)}</td>
+      <td class="td-amount paid">${rentPaid.toFixed(2)}</td>
+      <td class="td-amount" style="color:var(--teal)">${dewaShare.toFixed(2)}</td>
+      <td class="td-amount" style="color:var(--text-dim)">${expShare.toFixed(2)}</td>
+      <td class="td-amount ${total>0?'balance':'paid'}" style="font-size:15px">${total.toFixed(2)}</td>
+      <td><span class="pill ${isSettled?'pill-paid':total<50?'pill-pending':'pill-overdue'}">${isSettled?'Settled':total<50?'Minor':'Outstanding'}</span></td>
+    </tr>`;
+  }).join('');
+}
+
+function renderAdmin() {
+  const list = document.getElementById('admin-users-list');
+  list.innerHTML = state.admins.map((a,i)=>`
+    <div class="admin-user-row">
+      <div class="aur-avatar">${a.name.slice(0,2).toUpperCase()}</div>
+      <div style="flex:1">
+        <div class="aur-name">${a.name}</div>
+        <div class="aur-role">${a.role}</div>
+      </div>
+      ${i>0?`<button onclick="removeAdmin(${i})" style="background:var(--red-dim);border:none;color:var(--red);cursor:pointer;border-radius:6px;padding:4px 8px;font-size:11px">Remove</button>`:'<span class="pill pill-paid">Active</span>'}
+    </div>
+  `).join('');
+}
+
+function removeAdmin(idx) {
+  state.admins.splice(idx,1);
+  renderAdmin();
+  showToast('Admin removed');
+}
+
+// ══════════════════════════════════════════════════════════════════
+// MODALS & UTILS
+// ══════════════════════════════════════════════════════════════════
+
+function openModal(id){document.getElementById(id).classList.add('open')}
+function closeModal(id){document.getElementById(id).classList.remove('open')}
+function openAddAdmin(){openModal('add-admin-modal')}
+
+function confirmAddAdmin() {
+  const name  = document.getElementById('new-admin-name').value.trim();
+  const email = document.getElementById('new-admin-email').value.trim();
+  const role  = document.getElementById('new-admin-role').value;
+  if(!name||!email){showToast('⚠️ Fill in name and email','warn');return;}
+  state.admins.push({name:`${name} (${email})`,role});
+  closeModal('add-admin-modal');
+  document.getElementById('new-admin-name').value='';
+  document.getElementById('new-admin-email').value='';
+  if(document.getElementById('page-admin').classList.contains('active')) renderAdmin();
+  showToast(`${name} added as ${role}`);
+}
+
+function sendReminders() {
+  closeModal('reminder-modal');
+  showToast('📧 Reminders sent to all tenants with outstanding balances');
+}
+
+function exportData() {
+  const rows = [['Tenant','Room','Rent Due','Rent Paid','DEWA','Balance']];
+  TENANTS.forEach(t=>{
+    const rentDue = t.share*3;
+    const rentPaid = [1,2,3].filter(c=>state.rentStatus[`${t.name}-${c}`]?.paid).length*t.share;
+    const dewa = (state.dewaMonthly/18)||0;
+    rows.push([t.name,t.room,rentDue.toFixed(2),rentPaid.toFixed(2),dewa.toFixed(2),(rentDue-rentPaid+dewa).toFixed(2)]);
+  });
+  const csv = rows.map(r=>r.join(',')).join('\n');
+  const a = document.createElement('a');
+  a.href = 'data:text/csv;charset=utf-8,'+encodeURIComponent(csv);
+  a.download = 'Flat404_Balances.csv';
+  a.click();
+  showToast('📤 CSV exported');
+}
+
+function generateReport() {
+  const totalRentDue = TENANTS.reduce((s,t)=>s+t.share*3,0);
+  const totalRentPaid = TENANTS.reduce((s,t)=>s+[1,2,3].filter(c=>state.rentStatus[`${t.name}-${c}`]?.paid).length*t.share,0);
+  const totalExp = state.expenses.reduce((s,e)=>s+e.amt,0);
+  showAlert(`📋 MONTHLY REPORT\n\nTotal Rent Due: AED ${totalRentDue.toFixed(2)}\nTotal Collected: AED ${totalRentPaid.toFixed(2)}\nOutstanding: AED ${(totalRentDue-totalRentPaid).toFixed(2)}\n\nShared Expenses: AED ${totalExp.toFixed(2)}\nDEWA (this month): AED ${state.dewaMonthly.toFixed(2)}`);
+}
+
+function showAlert(msg){
+  // Simple styled alert via modal reuse
+  alert(msg);
+}
+
+let toastTimer;
+function showToast(msg, type='success') {
+  const t = document.getElementById('toast');
+  t.textContent = (type==='warn'?'⚠️ ':'✅ ')+msg;
+  t.style.borderColor = type==='warn'?'var(--gold)':'var(--green)';
+  t.style.color = type==='warn'?'var(--gold)':'var(--green)';
+  t.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(()=>t.classList.remove('show'),3000);
+}
+
+function switchTab(page, tabId, el) {
+  const prefix = page+'-';
+  document.querySelectorAll(`#page-${page} .tab`).forEach(t=>t.classList.remove('active'));
+  document.querySelectorAll(`#page-${page} .tab-content`).forEach(t=>t.classList.remove('active'));
+  el.classList.add('active');
+  document.getElementById(prefix+tabId).classList.add('active');
+}
+
+function toggleSidebar() {
+  document.getElementById('sidebar').classList.toggle('open');
+}
+
+// Close sidebar on overlay click
+document.addEventListener('click', e=>{
+  const sb = document.getElementById('sidebar');
+  if(window.innerWidth<=768 && sb.classList.contains('open') && !sb.contains(e.target) && !e.target.closest('.hamburger')){
+    sb.classList.remove('open');
+  }
+});
+
+// ══════════════════════════════════════════════════════════════════
+// INIT
+// ══════════════════════════════════════════════════════════════════
+window.addEventListener('DOMContentLoaded', ()=>{
+  renderDashboard();
+  updatePendingBadge();
+  // Animate stats
+  setTimeout(()=>{
+    document.getElementById('c1-bar').style.width='0%';
+    document.getElementById('c1-pct').textContent='0%';
+  },600);
+});
+</script>
+</body>
+</html>
